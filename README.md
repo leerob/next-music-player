@@ -2,11 +2,18 @@
 
 A nice GUI for playing/viewing local media files.
 
+## Running Locally
+
+- Add local audio files to a top level `tracks/` folder (git ignored)
+- Go to http://localhost:3000/p/1
+
 ## Features
 
 - Blazing fast
 - Did I mention it's blazing fast?
 - vim motions (lol) – move between songs with [J]/[K]
+- Double click on song to play
+- Nice animation for currently playing song
 
 ## TODO
 
@@ -17,3 +24,5 @@ A nice GUI for playing/viewing local media files.
 - Hook up search (playlists or songs? Not sure)
 - Add/remove songs to playlists
 - View for all tracks
+- Hook up the volume control
+- Ability to drag on the progress bar to seek song
