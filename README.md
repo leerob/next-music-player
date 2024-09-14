@@ -14,7 +14,7 @@ A nice GUI for playing/viewing local media files.
 - Blazing fast
 - Did I mention it's blazing fast?
 - vim motions (lol) – move between songs with [J]/[K]
-- Double click on song to play
+- Double click on song to play (can you believe it?)
 - Nice animation for currently playing song
 
 ## TODO
