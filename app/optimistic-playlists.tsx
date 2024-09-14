@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus } from 'lucide-react';
 import { useOptimistic, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Playlist } from '@/lib/db/types';
 
@@ -19,6 +20,7 @@ export function OptimisticPlaylists({
     (state, newPlaylist: Playlist) => [...state, newPlaylist]
   );
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -33,8 +35,8 @@ export function OptimisticPlaylists({
   }, []);
 
   const addNewPlaylist = () => {
-    const newPlaylist = {
-      id: Math.floor(Math.random() * 10000),
+    const newPlaylist: Playlist = {
+      id: Math.floor(Math.random() * 10000).toString(),
       name: 'New',
       coverUrl:
         'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-W3SJ4jU3qrj1Dpi1V5DgUXbJKsrD2k.png',
@@ -57,7 +59,9 @@ export function OptimisticPlaylists({
         <div className="mb-6">
           <Link
             href="/"
-            className="block py-1 px-4 -mx-4 text-xs text-[#d1d5db] hover:bg-[#1A1A1A] transition-colors focus:outline-none focus:ring-[0.5px] focus:ring-gray-400"
+            className={`block py-1 px-4 -mx-4 text-xs text-[#d1d5db] hover:bg-[#1A1A1A] transition-colors focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
+              pathname === '/' ? 'bg-[#1A1A1A]' : ''
+            }`}
           >
             All Tracks
           </Link>
@@ -85,7 +89,9 @@ export function OptimisticPlaylists({
             <li key={index}>
               <Link
                 href={`/p/${playlist.id}`}
-                className="block py-1 px-4 cursor-pointer hover:bg-[#1A1A1A] text-[#d1d5db] focus:outline-none focus:ring-[0.5px] focus:ring-gray-400"
+                className={`block py-1 px-4 cursor-pointer hover:bg-[#1A1A1A] text-[#d1d5db] focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
+                  pathname === `/p/${playlist.id}` ? 'bg-[#1A1A1A]' : ''
+                }`}
               >
                 {playlist.name}
               </Link>
