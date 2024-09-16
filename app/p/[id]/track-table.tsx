@@ -1,25 +1,20 @@
 'use client';
 
-import { updateNowPlayingAction } from '@/lib/db/actions';
+import { usePlayback } from '@/app/playback-context';
 import { Playlist, Track } from '@/lib/db/types';
 import { useEffect, useRef } from 'react';
 
-export function TrackTable({
-  playlist,
-  nowPlayingTrack,
-}: {
-  playlist: Playlist;
-  nowPlayingTrack: Track;
-}) {
-  const tableRef = useRef<HTMLTableElement>(null);
+export function TrackTable({ playlist }: { playlist: Playlist }) {
+  let tableRef = useRef<HTMLTableElement>(null);
+  let { currentTrack, playTrack, togglePlayPause, isPlaying } = usePlayback();
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    let handleKeyDown = (e: KeyboardEvent) => {
       if (!tableRef.current) return;
 
-      const rows = Array.from(tableRef.current.querySelectorAll('tbody tr'));
-      const currentFocusedRow = document.activeElement as HTMLElement;
-      const currentIndex = rows.indexOf(currentFocusedRow);
+      let rows = Array.from(tableRef.current.querySelectorAll('tbody tr'));
+      let currentFocusedRow = document.activeElement as HTMLElement;
+      let currentIndex = rows.indexOf(currentFocusedRow);
 
       let newIndex: number;
 
@@ -33,9 +28,15 @@ export function TrackTable({
           newIndex = Math.max(currentIndex - 1, 0);
           break;
         case 'Enter':
+        case ' ': // Handle space key
           if (currentFocusedRow && currentFocusedRow.tagName === 'TR') {
-            const track = playlist.tracks[currentIndex];
-            updateNowPlayingAction(track);
+            e.preventDefault(); // Prevent scrolling
+            let track = playlist.tracks[currentIndex];
+            if (currentTrack?.name === track.name) {
+              togglePlayPause();
+            } else {
+              playTrack(track);
+            }
           }
           return;
         default:
@@ -50,14 +51,32 @@ export function TrackTable({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [playlist.tracks]);
+  }, [playlist.tracks, playTrack, togglePlayPause, currentTrack]);
 
   function onClickTrackRow(
     e: React.MouseEvent<HTMLTableRowElement>,
     track: Track
   ) {
     if (e.detail === 2) {
-      updateNowPlayingAction(track);
+      if (currentTrack?.name === track.name) {
+        togglePlayPause();
+      } else {
+        playTrack(track);
+      }
+    }
+  }
+
+  function onKeyDownTrackRow(
+    e: React.KeyboardEvent<HTMLTableRowElement>,
+    track: Track
+  ) {
+    if (e.key === ' ') {
+      e.preventDefault(); // Prevent scrolling
+      if (currentTrack?.name === track.name) {
+        togglePlayPause();
+      } else {
+        playTrack(track);
+      }
     }
   }
 
@@ -76,18 +95,25 @@ export function TrackTable({
         {playlist.tracks.map((track, index) => (
           <tr
             key={index}
-            className={`group hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 ${
-              nowPlayingTrack.name === track.name ? 'bg-[#1A1A1A]' : ''
+            className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 ${
+              currentTrack?.name === track.name ? 'bg-[#1A1A1A]' : ''
             }`}
             tabIndex={0}
             onClick={(e) => onClickTrackRow(e, track)}
+            onKeyDown={(e) => onKeyDownTrackRow(e, track)}
           >
             <td className="py-1 pl-3 pr-2 tabular-nums w-8">
-              {nowPlayingTrack.name === track.name ? (
+              {currentTrack?.name === track.name ? (
                 <div className="flex items-end space-x-[2px] size-[0.65rem]">
-                  <div className="w-1 bg-neutral-600 animate-now-playing-1"></div>
-                  <div className="w-1 bg-neutral-600 animate-now-playing-2 [animation-delay:0.2s]"></div>
-                  <div className="w-1 bg-neutral-600 animate-now-playing-3 [animation-delay:0.4s]"></div>
+                  <div
+                    className={`w-1 bg-neutral-600 ${isPlaying ? 'animate-now-playing-1' : ''}`}
+                  ></div>
+                  <div
+                    className={`w-1 bg-neutral-600 ${isPlaying ? 'animate-now-playing-2 [animation-delay:0.2s]' : ''}`}
+                  ></div>
+                  <div
+                    className={`w-1 bg-neutral-600 ${isPlaying ? 'animate-now-playing-3 [animation-delay:0.4s]' : ''}`}
+                  ></div>
                 </div>
               ) : (
                 index + 1

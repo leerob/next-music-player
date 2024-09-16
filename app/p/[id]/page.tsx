@@ -52,7 +52,7 @@ export default async function PlaylistPage({
 
       <ScrollArea className="flex-1">
         <div className="min-w-max">
-          <TrackTable playlist={playlist} nowPlayingTrack={nowPlayingTrack} />
+          <TrackTable playlist={playlist} />
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

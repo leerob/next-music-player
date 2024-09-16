@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { NowPlaying } from './now-playing';
 import { AllPlaylists } from './all-playlists';
+import { PlaybackProvider } from './playback-context';
 
 export const metadata: Metadata = {
   title: 'My Music',
@@ -22,9 +23,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body className="dark flex flex-col md:flex-row h-screen text-gray-200 bg-[#0A0A0A]">
-        <AllPlaylists />
-        {children}
-        <NowPlaying />
+        <PlaybackProvider>
+          <AllPlaylists />
+          {children}
+          <NowPlaying />
+        </PlaybackProvider>
       </body>
     </html>
   );
