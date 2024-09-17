@@ -23,6 +23,8 @@ export function PlaybackControls() {
     setCurrentTime,
     setDuration,
     audioRef,
+    playNextTrack,
+    playPreviousTrack,
   } = usePlayback();
   let [volume, setVolume] = useState(100);
   let [isMuted, setIsMuted] = useState(false);
@@ -105,7 +107,7 @@ export function PlaybackControls() {
         {currentTrack && (
           <>
             <img
-              src={currentTrack.imageUrl || ''}
+              src={currentTrack.imageUrl || '/placeholder.svg'}
               alt="Now playing"
               className="w-10 h-10 object-cover"
             />
@@ -133,6 +135,7 @@ export function PlaybackControls() {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
+            onClick={playPreviousTrack}
             disabled={!currentTrack}
           >
             <SkipBack className="w-4 h-4 stroke-[1.5]" />
@@ -154,6 +157,7 @@ export function PlaybackControls() {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
+            onClick={playNextTrack}
             disabled={!currentTrack}
           >
             <SkipForward className="w-4 h-4 stroke-[1.5]" />

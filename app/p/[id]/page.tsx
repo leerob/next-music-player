@@ -5,6 +5,7 @@ import { TrackTable } from './track-table';
 import { getPlaylistWithSongs } from '@/lib/db/queries';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { formatDuration } from '@/lib/utils';
 
 export default async function PlaylistPage({
   params,
@@ -53,7 +54,7 @@ export default async function PlaylistPage({
         <div>
           <h1 className="text-xl sm:text-2xl font-bold">{playlist.name}</h1>
           <p className="text-xs sm:text-sm text-gray-400">
-            {playlist.trackCount} tracks • {playlist.duration}
+            {playlist.trackCount} tracks • {formatDuration(playlist.duration)}
           </p>
         </div>
       </div>

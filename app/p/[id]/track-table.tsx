@@ -2,61 +2,35 @@
 
 import { usePlayback } from '@/app/playback-context';
 import { PlaylistWithSongs, Song } from '@/lib/db/types';
-import { useEffect, useRef } from 'react';
+import { formatDuration } from '@/lib/utils';
+import { useRef, useEffect } from 'react';
 
 export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
-  let tableRef = useRef<HTMLTableElement>(null);
-  let { currentTrack, playTrack, togglePlayPause, isPlaying } = usePlayback();
+  const tableRef = useRef<HTMLTableElement>(null);
+  const {
+    currentTrack,
+    playTrack,
+    togglePlayPause,
+    isPlaying,
+    registerPanelRef,
+    handleKeyNavigation,
+    setActivePanel,
+    setPlaylist,
+  } = usePlayback();
 
   useEffect(() => {
-    let handleKeyDown = (e: KeyboardEvent) => {
-      if (!tableRef.current) return;
+    registerPanelRef('tracklist', tableRef);
+  }, [registerPanelRef]);
 
-      let rows = Array.from(tableRef.current.querySelectorAll('tbody tr'));
-      let currentFocusedRow = document.activeElement as HTMLElement;
-      let currentIndex = rows.indexOf(currentFocusedRow);
-
-      let newIndex: number;
-
-      switch (e.key) {
-        case 'j':
-        case 'ArrowDown':
-          newIndex = Math.min(currentIndex + 1, rows.length - 1);
-          break;
-        case 'k':
-        case 'ArrowUp':
-          newIndex = Math.max(currentIndex - 1, 0);
-          break;
-        case 'Enter':
-        case ' ':
-          if (currentFocusedRow && currentFocusedRow.tagName === 'TR') {
-            e.preventDefault();
-            let track = playlist.songs[currentIndex];
-            if (currentTrack?.name === track.name) {
-              togglePlayPause();
-            } else {
-              playTrack(track);
-            }
-          }
-          return;
-        default:
-          return;
-      }
-
-      e.preventDefault();
-      (rows[newIndex] as HTMLElement).focus();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [playlist.songs, playTrack, togglePlayPause, currentTrack]);
+  useEffect(() => {
+    setPlaylist(playlist.songs);
+  }, [playlist.songs, setPlaylist]);
 
   function onClickTrackRow(
     e: React.MouseEvent<HTMLTableRowElement>,
     track: Song
   ) {
+    setActivePanel('tracklist');
     if (e.detail === 2) {
       if (currentTrack?.name === track.name) {
         togglePlayPause();
@@ -70,18 +44,24 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
     e: React.KeyboardEvent<HTMLTableRowElement>,
     track: Song
   ) {
-    if (e.key === ' ') {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       if (currentTrack?.name === track.name) {
         togglePlayPause();
       } else {
         playTrack(track);
       }
+    } else {
+      handleKeyNavigation(e, 'tracklist');
     }
   }
 
   return (
-    <table ref={tableRef} className="w-full text-xs">
+    <table
+      ref={tableRef}
+      className="w-full text-xs"
+      onClick={() => setActivePanel('tracklist')}
+    >
       <thead className="sticky top-0 bg-[#0A0A0A] z-10 border-b border-[#282828]">
         <tr className="text-left text-gray-400">
           <th className="py-2 pl-3 pr-2 font-medium w-10">#</th>
@@ -94,7 +74,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
       <tbody className="mt-[1px]">
         {playlist.songs.map((track: Song, index: number) => (
           <tr
-            key={index}
+            key={track.id}
             className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 select-none ${
               currentTrack?.name === track.name ? 'bg-[#1A1A1A]' : ''
             }`}
@@ -116,7 +96,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
             <td className="py-1 px-2">
               <div className="flex items-center">
                 <img
-                  src={track.imageUrl || ''}
+                  src={track.imageUrl || '/placeholder.svg'}
                   alt={`${track.album} cover`}
                   className="size-4 mr-2 object-cover"
                 />
@@ -135,7 +115,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
               {track.album}
             </td>
             <td className="py-1 px-2 tabular-nums text-[#d1d5db]">
-              {track.duration}
+              {formatDuration(track.duration)}
             </td>
           </tr>
         ))}
