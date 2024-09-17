@@ -31,12 +31,10 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
     track: Song
   ) {
     setActivePanel('tracklist');
-    if (e.detail === 2) {
-      if (currentTrack?.name === track.name) {
-        togglePlayPause();
-      } else {
-        playTrack(track);
-      }
+    if (currentTrack?.name === track.name) {
+      togglePlayPause();
+    } else {
+      playTrack(track);
     }
   }
 

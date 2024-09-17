@@ -18,14 +18,15 @@ A nice GUI for playing/viewing local media files.
 
 - ✅ Press space to play/pause from anywhere in the app
 - ✅ View for all tracks
-- ✅ Double click on song row to play
+- ✅ Click on song row to play
 - ✅ Move between songs in tracklist with up/down or j/k
+- ✅ Move between playlists panel and tracklist with h/l
 - ✅ Now playing animation in track row
-- Create playlists
-- Save playlist information
+- ✅ Support for both local or remote files
+- ✅ Mobile responsiveness
+- Create a new playlist in the UI
+- Add/remove songs to a playist in the UI
 - Persist active song to storage
-- Allow a version to be played online with fixed songs?
 - Hook up search (playlists or songs? Not sure)
-- Add/remove songs to playlists
 - Hook up the volume control
 - Ability to drag on the progress bar to seek song
