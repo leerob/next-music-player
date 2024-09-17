@@ -44,7 +44,7 @@ export function OptimisticPlaylists({
 
   return (
     <div
-      className="hidden md:block w-56 bg-[#121212] h-screen overflow-auto"
+      className="hidden md:block w-56 bg-[#121212] h-[100dvh] overflow-auto"
       onClick={() => setActivePanel('sidebar')}
     >
       <div className="m-4">
@@ -82,7 +82,7 @@ export function OptimisticPlaylists({
           </Button>
         </div>
       </div>
-      <ScrollArea className="h-[calc(100vh-180px)]">
+      <ScrollArea className="h-[calc(100dvh-180px)]">
         <ul
           ref={playlistsContainerRef}
           className="space-y-0.5 text-xs mt-[1px]"

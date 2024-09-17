@@ -24,9 +24,9 @@ A nice GUI for playing/viewing local media files.
 - ✅ Now playing animation in track row
 - ✅ Support for both local or remote files
 - ✅ Mobile responsiveness
+- ✅Drag on the progress bar to seek song
 - Create a new playlist in the UI
 - Add/remove songs to a playist in the UI
 - Persist active song to storage
 - Hook up search (playlists or songs? Not sure)
 - Hook up the volume control
-- Ability to drag on the progress bar to seek song

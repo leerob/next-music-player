@@ -6,11 +6,13 @@ import { AllPlaylists } from './all-playlists';
 import { PlaybackProvider } from './playback-context';
 
 export const metadata: Metadata = {
-  title: 'My Music',
+  title: 'Next.js Music Player',
+  description: 'A music player built with Next.js.',
 };
 
 export const viewport: Viewport = {
   maximumScale: 1,
+  themeColor: '#0A0A0A',
 };
 
 const inter = Inter({ subsets: ['latin'] });
@@ -22,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.className}>
-      <body className="dark flex flex-col md:flex-row h-screen text-gray-200 bg-[#0A0A0A]">
+      <body className="dark flex flex-col md:flex-row h-[100dvh] text-gray-200 bg-[#0A0A0A]">
         <PlaybackProvider>
           <AllPlaylists />
           {children}
