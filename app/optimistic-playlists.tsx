@@ -91,6 +91,7 @@ export function OptimisticPlaylists({
           {optimisticPlaylists.map((playlist) => (
             <li key={playlist.id}>
               <Link
+                prefetch={true}
                 href={`/p/${playlist.id}`}
                 className={`block py-1 px-4 cursor-pointer hover:bg-[#1A1A1A] text-[#d1d5db] focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
                   pathname === `/p/${playlist.id}` ? 'bg-[#1A1A1A]' : ''
