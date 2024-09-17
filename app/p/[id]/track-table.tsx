@@ -98,7 +98,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
                   alt={`${track.album} cover`}
                   className="size-4 mr-2 object-cover"
                 />
-                <div className="font-medium truncate max-w-[120px] sm:max-w-[200px] text-[#d1d5db]">
+                <div className="font-medium truncate max-w-[180px] sm:max-w-[200px] text-[#d1d5db]">
                   {track.name}
                   <span className="sm:hidden text-gray-400 ml-1">
                     • {track.artist}
