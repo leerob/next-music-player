@@ -77,18 +77,22 @@ function useKeyboardNavigation() {
           if (panel === 'tracklist') {
             e.preventDefault();
             setActivePanel('sidebar');
-            panelRefs.current.sidebar?.current
-              ?.querySelector('[tabindex="0"]')
-              ?.focus();
+            const sidebarFirstItem =
+              panelRefs.current.sidebar?.current?.querySelector(
+                '[tabindex="0"]'
+              ) as HTMLElement | null;
+            sidebarFirstItem?.focus();
           }
           break;
         case 'l':
           if (panel === 'sidebar') {
             e.preventDefault();
             setActivePanel('tracklist');
-            panelRefs.current.tracklist?.current
-              ?.querySelector('[tabindex="0"]')
-              ?.focus();
+            const tracklistFirstItem =
+              panelRefs.current.tracklist?.current?.querySelector(
+                '[tabindex="0"]'
+              ) as HTMLElement | null;
+            tracklistFirstItem?.focus();
           }
           break;
       }
@@ -171,7 +175,10 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         togglePlayPause();
       } else if (e.key === '/') {
         e.preventDefault();
-        document.querySelector('input[type="search"]')?.focus();
+        const searchInput = document.querySelector(
+          'input[type="search"]'
+        ) as HTMLInputElement | null;
+        searchInput?.focus();
       }
     };
 
