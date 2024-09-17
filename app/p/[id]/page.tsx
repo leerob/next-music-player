@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { TrackTable } from './track-table';
 import { getPlaylistWithSongs } from '@/lib/db/queries';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 export default async function PlaylistPage({
   params,
@@ -20,9 +21,11 @@ export default async function PlaylistPage({
     <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A] pb-[69px]">
       <div className="flex items-center justify-between p-3 bg-[#0A0A0A]">
         <div className="flex items-center space-x-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7">
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
+          <Link href="/" passHref>
+            <Button variant="ghost" size="icon" className="h-7 w-7">
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+          </Link>
           <Button variant="ghost" size="icon" className="h-7 w-7" disabled>
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -41,7 +44,7 @@ export default async function PlaylistPage({
         </div>
       </div>
 
-      <div className="flex items-center p-3 space-x-3 bg-[#0A0A0A]">
+      <div className="flex items-center py-3 px-4 space-x-3 bg-[#0A0A0A]">
         <img
           src={playlist.coverUrl!}
           alt="Playlist cover"
@@ -55,7 +58,7 @@ export default async function PlaylistPage({
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 mt-3">
         <div className="min-w-max">
           <TrackTable playlist={playlist} />
         </div>

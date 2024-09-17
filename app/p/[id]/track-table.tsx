@@ -95,7 +95,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
         {playlist.songs.map((track: Song, index: number) => (
           <tr
             key={index}
-            className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 ${
+            className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 select-none ${
               currentTrack?.name === track.name ? 'bg-[#1A1A1A]' : ''
             }`}
             tabIndex={0}

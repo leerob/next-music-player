@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import NodeID3 from 'node-id3';
+import { parseBuffer } from 'music-metadata';
 import { db } from './drizzle';
 import { songs, playlists, playlistSongs } from './schema';
 import { eq } from 'drizzle-orm';
@@ -20,33 +20,24 @@ async function seedSongs() {
     (file) => path.extname(file).toLowerCase() === '.mp3'
   )) {
     const filePath = path.join(tracksDir, file);
-    const tags = NodeID3.read(filePath);
-
-    if (!tags) {
-      console.log(`No tags found for file: ${file}`);
-      continue;
-    }
+    const buffer = await fs.readFile(filePath);
+    const metadata = await parseBuffer(buffer, { mimeType: 'audio/mpeg' });
 
     let imageUrl;
-    if (typeof tags.image === 'object' && tags.image.imageBuffer) {
-      const base64Image = tags.image.imageBuffer.toString('base64');
-      imageUrl = `data:${tags.image.mime};base64,${base64Image}`;
+    if (metadata.common.picture && metadata.common.picture.length > 0) {
+      const picture = metadata.common.picture[0];
+      const base64Image = Buffer.from(picture.data).toString('base64');
+      imageUrl = `data:${picture.format};base64,${base64Image}`;
     }
 
-    const durationInSeconds = tags.length
-      ? Math.round(parseInt(tags.length, 10) / 1000)
-      : 0;
-
     const songData = {
-      name: tags.title || path.parse(file).name,
-      artist: tags.artist || 'Unknown Artist',
-      album: tags.album || 'Unknown Album',
-      duration: durationInSeconds,
-      genre: Array.isArray(tags.genre)
-        ? tags.genre[0]
-        : tags.genre || 'Unknown Genre',
-      bpm: tags.bpm ? parseInt(tags.bpm) : null,
-      key: tags.initialKey || null,
+      name: metadata.common.title || path.parse(file).name,
+      artist: metadata.common.artist || 'Unknown Artist',
+      album: metadata.common.album || 'Unknown Album',
+      duration: Math.round(metadata.format.duration || 0),
+      genre: metadata.common.genre?.[0] || 'Unknown Genre',
+      bpm: metadata.common.bpm ? Math.round(metadata.common.bpm) : null,
+      key: metadata.common.key || null,
       imageUrl: imageUrl,
       audioUrl: `file://${filePath}`,
       isLocal: true,

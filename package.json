@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
@@ -22,8 +23,8 @@
     "drizzle-kit": "^0.24.2",
     "drizzle-orm": "^0.33.0",
     "lucide-react": "^0.439.0",
+    "music-metadata": "^10.5.0",
     "next": "15.0.0-canary.152",
-    "node-id3": "^0.2.6",
     "postcss": "^8.4.45",
     "postgres": "^3.4.4",
     "react": "19.0.0-rc-7771d3a7-20240827",
