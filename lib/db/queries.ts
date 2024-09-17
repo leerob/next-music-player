@@ -1,101 +1,115 @@
-import 'server-only';
-import fs from 'fs';
-import path from 'path';
-import * as mm from 'music-metadata';
-import { promisify } from 'util';
-import { Playlist, Track } from './types';
+import { eq, sql, desc, asc, and } from 'drizzle-orm';
+import { db } from './drizzle';
+import { songs, playlists, playlistSongs } from './schema';
 
-const readdir = promisify(fs.readdir);
-const readFile = promisify(fs.readFile);
+export let getAllSongs = async () => {
+  return db.select().from(songs).orderBy(asc(songs.name));
+};
 
-export async function getPlaylist(id: string): Promise<Playlist> {
-  const tracksDir = path.join(process.cwd(), 'tracks');
-  const files = await readdir(tracksDir);
+export let getSongById = async (id: number) => {
+  return db.query.songs.findFirst({
+    where: eq(songs.id, id),
+  });
+};
 
-  const tracks: Track[] = await Promise.all(
-    files
-      .filter((file) => path.extname(file).toLowerCase() === '.mp3')
-      .map(async (file) => {
-        const filePath = path.join(tracksDir, file);
-        const buffer = await readFile(filePath);
-        const metadata = await mm.parseBuffer(buffer);
+export let getAllPlaylists = async () => {
+  return db.select().from(playlists).orderBy(asc(playlists.name));
+};
 
-        let imageUrl;
-        if (metadata.common.picture && metadata.common.picture.length > 0) {
-          const picture = metadata.common.picture[0];
-          const base64Image = Buffer.from(picture.data).toString('base64');
-          imageUrl = `data:${picture.format};base64,${base64Image}`;
-        }
+export let getPlaylistWithSongs = async (id: number) => {
+  const result = await db.query.playlists.findFirst({
+    where: eq(playlists.id, id),
+    with: {
+      playlistSongs: {
+        columns: {
+          order: true,
+        },
+        with: {
+          song: true,
+        },
+        orderBy: asc(playlistSongs.order),
+      },
+    },
+  });
 
-        return {
-          name: metadata.common.title || path.parse(file).name,
-          artist: metadata.common.artist || 'Unknown Artist',
-          album: metadata.common.album || 'Unknown Album',
-          duration: formatDuration(metadata.format.duration || 0),
-          genre: metadata.common.genre?.[0] || 'Unknown Genre',
-          bpm: metadata.common.bpm || 0,
-          key: metadata.common.key || 'Unknown',
-          imageUrl: imageUrl,
-          audioUrl: `file://${filePath}`,
-        };
-      })
-  );
+  if (!result) return null;
 
-  const totalDuration = tracks.reduce((sum, track) => {
-    const [minutes, seconds] = track.duration.split(':').map(Number);
-    return sum + minutes * 60 + seconds;
-  }, 0);
+  const songs = result.playlistSongs.map((ps) => ({
+    ...ps.song,
+    order: ps.order,
+  }));
+
+  const trackCount = songs.length;
+  const duration = songs.reduce((total, song) => total + song.duration, 0);
 
   return {
-    id,
-    name: "Lee's Jams",
-    coverUrl:
-      'https://pbs.twimg.com/profile_images/1587647097670467584/adWRdqQ6_400x400.jpg',
-    trackCount: tracks.length,
-    duration: formatDuration(totalDuration),
-    tracks,
+    ...result,
+    songs,
+    trackCount,
+    duration,
   };
-}
+};
 
-function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.round(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
+export let addSongToPlaylist = async (
+  playlistId: number,
+  songId: number,
+  order: number
+) => {
+  return db.insert(playlistSongs).values({ playlistId, songId, order });
+};
 
-export async function getAllPlaylists(): Promise<Playlist[]> {
-  const playlistNames = [
-    'Techno Essentials',
-    'Deep House Vibes',
-    'EDM Bangers',
-    'Ambient Chill',
-    'Drum and Bass Mix',
-    'Trance Classics',
-    'Dubstep Drops',
-    'Electro Swing',
-    'Synthwave Retrowave',
-    'Progressive House',
-    'Minimal Techno',
-    'Future Bass',
-  ];
+export let removeSongFromPlaylist = async (
+  playlistId: number,
+  songId: number
+) => {
+  return db
+    .delete(playlistSongs)
+    .where(
+      and(
+        eq(playlistSongs.playlistId, playlistId),
+        eq(playlistSongs.songId, songId)
+      )
+    );
+};
 
-  return playlistNames.map((name, index) => ({
-    id: `playlist-${index + 1}`,
-    name,
-    coverUrl: 'https://example.com/default-cover.jpg',
-    trackCount: 0,
-    duration: '0 minutes',
-    tracks: [],
-  }));
-}
+export let createPlaylist = async (name: string, coverUrl?: string) => {
+  const result = await db
+    .insert(playlists)
+    .values({ name, coverUrl })
+    .returning();
+  return result[0];
+};
 
-export let nowPlayingTrack = await getCurrentTrack();
+export let updatePlaylist = async (
+  id: number,
+  name: string,
+  coverUrl?: string
+) => {
+  const result = await db
+    .update(playlists)
+    .set({ name, coverUrl, updatedAt: new Date() })
+    .where(eq(playlists.id, id))
+    .returning();
+  return result[0];
+};
 
-export function setNowPlayingTrack(track: Track) {
-  nowPlayingTrack = track;
-}
+export let deletePlaylist = async (id: number) => {
+  // First, delete all playlist songs
+  await db.delete(playlistSongs).where(eq(playlistSongs.playlistId, id));
+  // Then delete the playlist
+  return db.delete(playlists).where(eq(playlists.id, id));
+};
 
-export async function getCurrentTrack(): Promise<Track> {
-  const playlist = await getPlaylist('1');
-  return playlist.tracks[0];
-}
+export let searchSongs = async (query: string) => {
+  return db
+    .select()
+    .from(songs)
+    .where(
+      sql`${songs.name} ILIKE ${`%${query}%`} OR ${songs.artist} ILIKE ${`%${query}%`} OR ${songs.album} ILIKE ${`%${query}%`}`
+    )
+    .orderBy(asc(songs.name));
+};
+
+export let getRecentlyAddedSongs = async (limit: number = 10) => {
+  return db.select().from(songs).orderBy(desc(songs.createdAt)).limit(limit);
+};

@@ -8,15 +8,15 @@ import {
   ReactNode,
   useRef,
 } from 'react';
-import { Track } from '@/lib/db/types';
+import { Song } from '@/lib/db/types';
 
 type PlaybackContextType = {
   isPlaying: boolean;
-  currentTrack: Track | null;
+  currentTrack: Song | null;
   currentTime: number;
   duration: number;
   togglePlayPause: () => void;
-  playTrack: (track: Track) => void;
+  playTrack: (track: Song) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   audioRef: React.RefObject<HTMLAudioElement>;
@@ -26,7 +26,7 @@ let PlaybackContext = createContext<PlaybackContextType | undefined>(undefined);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
   let [isPlaying, setIsPlaying] = useState(false);
-  let [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  let [currentTrack, setCurrentTrack] = useState<Song | null>(null);
   let [currentTime, setCurrentTime] = useState(0);
   let [duration, setDuration] = useState(0);
   let audioRef = useRef<HTMLAudioElement>(null);
@@ -42,7 +42,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  let playTrack = (track: Track) => {
+  let playTrack = (track: Song) => {
     setCurrentTrack(track);
     setIsPlaying(true);
     setCurrentTime(0);

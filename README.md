@@ -7,24 +7,25 @@ A nice GUI for playing/viewing local media files.
 ## Running Locally
 
 - Add local audio files to a top level `tracks/` folder (git ignored)
-- Go to http://localhost:3000/p/1
+- Create a new Postgres database
+- `pnpm db:generate`
+- `pnpm db:migrate`
+- `pnpm db:seed`
+- `pnpm dev`
+- Go to http://localhost:3000 🎉
 
 ## Features
 
-- Blazing fast
-- Did I mention it's blazing fast?
-- vim motions (lol) – move between songs with [J]/[K]
-- Double click on song to play (can you believe it?)
-- Nice animation for currently playing song
-
-## TODO
-
+- ✅ Press space to play/pause from anywhere in the app
+- ✅ View for all tracks
+- ✅ Double click on song row to play
+- ✅ Move between songs in tracklist with up/down or j/k
+- ✅ Now playing animation in track row
 - Create playlists
 - Save playlist information
 - Persist active song to storage
 - Allow a version to be played online with fixed songs?
 - Hook up search (playlists or songs? Not sure)
 - Add/remove songs to playlists
-- View for all tracks
 - Hook up the volume control
 - Ability to drag on the progress bar to seek song

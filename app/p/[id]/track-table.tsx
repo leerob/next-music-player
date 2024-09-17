@@ -1,10 +1,10 @@
 'use client';
 
 import { usePlayback } from '@/app/playback-context';
-import { Playlist, Track } from '@/lib/db/types';
+import { PlaylistWithSongs, Song } from '@/lib/db/types';
 import { useEffect, useRef } from 'react';
 
-export function TrackTable({ playlist }: { playlist: Playlist }) {
+export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
   let tableRef = useRef<HTMLTableElement>(null);
   let { currentTrack, playTrack, togglePlayPause, isPlaying } = usePlayback();
 
@@ -28,10 +28,10 @@ export function TrackTable({ playlist }: { playlist: Playlist }) {
           newIndex = Math.max(currentIndex - 1, 0);
           break;
         case 'Enter':
-        case ' ': // Handle space key
+        case ' ':
           if (currentFocusedRow && currentFocusedRow.tagName === 'TR') {
-            e.preventDefault(); // Prevent scrolling
-            let track = playlist.tracks[currentIndex];
+            e.preventDefault();
+            let track = playlist.songs[currentIndex];
             if (currentTrack?.name === track.name) {
               togglePlayPause();
             } else {
@@ -51,11 +51,11 @@ export function TrackTable({ playlist }: { playlist: Playlist }) {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [playlist.tracks, playTrack, togglePlayPause, currentTrack]);
+  }, [playlist.songs, playTrack, togglePlayPause, currentTrack]);
 
   function onClickTrackRow(
     e: React.MouseEvent<HTMLTableRowElement>,
-    track: Track
+    track: Song
   ) {
     if (e.detail === 2) {
       if (currentTrack?.name === track.name) {
@@ -68,10 +68,10 @@ export function TrackTable({ playlist }: { playlist: Playlist }) {
 
   function onKeyDownTrackRow(
     e: React.KeyboardEvent<HTMLTableRowElement>,
-    track: Track
+    track: Song
   ) {
     if (e.key === ' ') {
-      e.preventDefault(); // Prevent scrolling
+      e.preventDefault();
       if (currentTrack?.name === track.name) {
         togglePlayPause();
       } else {
@@ -84,7 +84,7 @@ export function TrackTable({ playlist }: { playlist: Playlist }) {
     <table ref={tableRef} className="w-full text-xs">
       <thead className="sticky top-0 bg-[#0A0A0A] z-10 border-b border-[#282828]">
         <tr className="text-left text-gray-400">
-          <th className="py-2 pl-3 pr-2 font-medium w-8">#</th>
+          <th className="py-2 pl-3 pr-2 font-medium w-10">#</th>
           <th className="py-2 px-2 font-medium">Title</th>
           <th className="py-2 px-2 font-medium hidden sm:table-cell">Artist</th>
           <th className="py-2 px-2 font-medium hidden md:table-cell">Album</th>
@@ -92,7 +92,7 @@ export function TrackTable({ playlist }: { playlist: Playlist }) {
         </tr>
       </thead>
       <tbody className="mt-[1px]">
-        {playlist.tracks.map((track, index) => (
+        {playlist.songs.map((track: Song, index: number) => (
           <tr
             key={index}
             className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 ${
@@ -102,21 +102,15 @@ export function TrackTable({ playlist }: { playlist: Playlist }) {
             onClick={(e) => onClickTrackRow(e, track)}
             onKeyDown={(e) => onKeyDownTrackRow(e, track)}
           >
-            <td className="py-1 pl-3 pr-2 tabular-nums w-8">
-              {currentTrack?.name === track.name ? (
-                <div className="flex items-end space-x-[2px] size-[0.65rem]">
-                  <div
-                    className={`w-1 bg-neutral-600 ${isPlaying ? 'animate-now-playing-1' : ''}`}
-                  ></div>
-                  <div
-                    className={`w-1 bg-neutral-600 ${isPlaying ? 'animate-now-playing-2 [animation-delay:0.2s]' : ''}`}
-                  ></div>
-                  <div
-                    className={`w-1 bg-neutral-600 ${isPlaying ? 'animate-now-playing-3 [animation-delay:0.4s]' : ''}`}
-                  ></div>
+            <td className="py-1 pl-3 pr-2 tabular-nums w-10 text-center">
+              {currentTrack?.name === track.name && isPlaying ? (
+                <div className="flex items-end justify-center space-x-[2px] size-[0.65rem] mx-auto">
+                  <div className="w-1 bg-neutral-600 animate-now-playing-1"></div>
+                  <div className="w-1 bg-neutral-600 animate-now-playing-2 [animation-delay:0.2s]"></div>
+                  <div className="w-1 bg-neutral-600 animate-now-playing-3 [animation-delay:0.4s]"></div>
                 </div>
               ) : (
-                index + 1
+                <span className="text-gray-400">{index + 1}</span>
               )}
             </td>
             <td className="py-1 px-2">

@@ -1,18 +1,23 @@
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { getPlaylist, nowPlayingTrack } from '@/lib/db/queries';
 import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { TrackTable } from './track-table';
+import { getPlaylistWithSongs } from '@/lib/db/queries';
+import { notFound } from 'next/navigation';
 
 export default async function PlaylistPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const playlist = await getPlaylist(params.id);
+  const playlist = await getPlaylistWithSongs(Number(params.id));
+
+  if (!playlist) {
+    notFound();
+  }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A]">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A] pb-[69px]">
       <div className="flex items-center justify-between p-3 bg-[#0A0A0A]">
         <div className="flex items-center space-x-1">
           <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -38,7 +43,7 @@ export default async function PlaylistPage({
 
       <div className="flex items-center p-3 space-x-3 bg-[#0A0A0A]">
         <img
-          src={playlist.coverUrl}
+          src={playlist.coverUrl!}
           alt="Playlist cover"
           className="w-16 h-16 sm:w-20 sm:h-20 object-cover"
         />

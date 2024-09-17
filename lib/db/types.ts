@@ -1,20 +1,11 @@
-export interface Track {
-  name: string;
-  artist: string;
-  album: string;
-  duration: string;
-  genre: string;
-  bpm: number;
-  key: string;
-  imageUrl: string | undefined;
-  audioUrl: string | undefined;
-}
-
-export interface Playlist {
-  id: string;
-  name: string;
-  coverUrl: string;
+export type Song = typeof songs.$inferSelect;
+export type NewSong = typeof songs.$inferInsert;
+export type Playlist = typeof playlists.$inferSelect;
+export type NewPlaylist = typeof playlists.$inferInsert;
+export type PlaylistSong = typeof playlistSongs.$inferSelect;
+export type NewPlaylistSong = typeof playlistSongs.$inferInsert;
+export type PlaylistWithSongs = Playlist & {
+  songs: (Song & { order: number })[];
   trackCount: number;
-  duration: string;
-  tracks: Track[];
-}
+  duration: number;
+};

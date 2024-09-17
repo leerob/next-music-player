@@ -1,15 +1,15 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { getPlaylist } from '@/lib/db/queries';
 import { TrackTable } from './p/[id]/track-table';
+import { getAllSongs } from '@/lib/db/queries';
 
 export default async function AllTracksPage() {
-  const playlist = await getPlaylist('1');
+  const allSongs = await getAllSongs();
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A]">
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#0A0A0A] pb-[69px]">
       <ScrollArea className="flex-1">
         <div className="min-w-max">
-          <TrackTable playlist={playlist} />
+          <TrackTable playlist={{ songs: allSongs }} />
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
