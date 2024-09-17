@@ -15,7 +15,7 @@ export function NowPlaying() {
               Now Playing
             </h2>
             <img
-              src={currentTrack.imageUrl}
+              src={currentTrack.imageUrl || undefined}
               alt="Current track"
               className="w-full aspect-square object-cover mb-3"
             />

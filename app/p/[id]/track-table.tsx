@@ -116,7 +116,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
             <td className="py-1 px-2">
               <div className="flex items-center">
                 <img
-                  src={track.imageUrl}
+                  src={track.imageUrl || ''}
                   alt={`${track.album} cover`}
                   className="size-4 mr-2 object-cover"
                 />

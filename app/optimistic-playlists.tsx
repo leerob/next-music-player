@@ -36,13 +36,11 @@ export function OptimisticPlaylists({
 
   const addNewPlaylist = () => {
     const newPlaylist: Playlist = {
-      id: Math.floor(Math.random() * 10000).toString(),
+      id: Math.floor(Math.random() * 10000),
       name: 'New',
-      coverUrl:
-        'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-W3SJ4jU3qrj1Dpi1V5DgUXbJKsrD2k.png',
-      trackCount: 0,
-      duration: '0',
-      tracks: [],
+      coverUrl: '',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     addOptimisticPlaylist(newPlaylist);
     setPlaylists((prev) => [...prev, newPlaylist]);

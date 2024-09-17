@@ -105,7 +105,7 @@ export function PlaybackControls() {
         {currentTrack && (
           <>
             <img
-              src={currentTrack.imageUrl}
+              src={currentTrack.imageUrl || ''}
               alt="Now playing"
               className="w-10 h-10 object-cover"
             />
