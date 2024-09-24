@@ -9,12 +9,22 @@ import { eq } from 'drizzle-orm';
 import { put } from '@vercel/blob';
 
 export async function createPlaylistAction() {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return;
+  }
+
   const playlist = await createPlaylist('New Playlist');
   revalidatePath('/', 'layout');
   redirect(`/p/${playlist.id}`);
 }
 
 export async function uploadPlaylistCoverAction(_: any, formData: FormData) {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return;
+  }
+
   const playlistId = formData.get('playlistId') as string;
   const file = formData.get('file') as File;
 
@@ -45,6 +55,11 @@ export async function updatePlaylistNameAction(
   playlistId: number,
   name: string
 ) {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return;
+  }
+
   await db.update(playlists).set({ name }).where(eq(playlists.id, playlistId));
 
   revalidatePath(`/p/${playlistId}`);
@@ -54,6 +69,11 @@ export async function deletePlaylistAction(
   id: number,
   shouldRedirect: boolean
 ) {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return;
+  }
+
   await db.delete(playlists).where(eq(playlists.id, id));
   revalidatePath('/', 'layout');
 
