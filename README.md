@@ -14,6 +14,9 @@ A nice GUI for playing/viewing local media files.
 - `pnpm dev`
 - Go to http://localhost:3000 🎉
 
+> [!WARNING]  
+> This also requires Vercel Blob. I'll need to create a setup script for that to automate.
+
 ## Features
 
 - ✅ Press space to play/pause from anywhere in the app
@@ -26,7 +29,8 @@ A nice GUI for playing/viewing local media files.
 - ✅ Mobile responsiveness
 - ✅ Drag on the progress bar to seek song
 - ✅ Create a new playlist in the UI
-- Add/remove songs to a playist in the UI
+- ✅ Image upload to Vercel Blob for playlist images
+- ✅ Add/remove songs to a playist in the UI
 - Persist active song to storage
 - Hook up search (playlists or songs? Not sure)
 - Hook up the volume control

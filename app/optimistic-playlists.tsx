@@ -27,7 +27,6 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
     let shouldRedirect = pathname === `/p/${id}`;
     await deletePlaylistAction(id, shouldRedirect);
   }
-
   return (
     <li className="group relative">
       <Link
