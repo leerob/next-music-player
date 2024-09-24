@@ -13,7 +13,7 @@ export let getSongById = async (id: number) => {
 };
 
 export let getAllPlaylists = async () => {
-  return db.select().from(playlists).orderBy(asc(playlists.name));
+  return db.select().from(playlists).orderBy(desc(playlists.createdAt));
 };
 
 export let getPlaylistWithSongs = async (id: number) => {

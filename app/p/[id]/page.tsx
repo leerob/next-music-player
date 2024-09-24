@@ -6,6 +6,8 @@ import { getPlaylistWithSongs } from '@/lib/db/queries';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { formatDuration } from '@/lib/utils';
+import { CoverImage } from './cover-image';
+import { EditableTitle } from './editable-title';
 
 export default async function PlaylistPage({
   params,
@@ -46,13 +48,9 @@ export default async function PlaylistPage({
       </div>
 
       <div className="flex items-center py-3 px-4 space-x-3 bg-[#0A0A0A]">
-        <img
-          src={playlist.coverUrl!}
-          alt="Playlist cover"
-          className="w-16 h-16 sm:w-20 sm:h-20 object-cover"
-        />
+        <CoverImage url={playlist.coverUrl} playlistId={playlist.id} />
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold">{playlist.name}</h1>
+          <EditableTitle playlistId={playlist.id} initialName={playlist.name} />
           <p className="text-xs sm:text-sm text-gray-400">
             {playlist.trackCount} tracks • {formatDuration(playlist.duration)}
           </p>

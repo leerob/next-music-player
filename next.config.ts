@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     ppr: true,
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
   },
 };
 
