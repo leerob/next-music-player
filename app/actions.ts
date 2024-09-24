@@ -62,7 +62,7 @@ export async function updatePlaylistNameAction(
 
   await db.update(playlists).set({ name }).where(eq(playlists.id, playlistId));
 
-  revalidatePath(`/p/${playlistId}`);
+  revalidatePath('/', 'layout');
 }
 
 export async function deletePlaylistAction(
@@ -117,7 +117,7 @@ export async function addToPlaylistAction(playlistId: number, songId: number) {
     })
     .execute();
 
-  revalidatePath(`/p/${playlistId}`);
+  revalidatePath('/', 'layout');
 
   return { success: true, message: 'Song added to playlist successfully' };
 }
