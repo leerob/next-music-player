@@ -4,18 +4,38 @@ A nice GUI for playing/viewing local media files.
 
 ![CleanShot 2024-09-14 at 15 34 26@2x](https://github.com/user-attachments/assets/d1b747a4-bc0e-45fc-9df9-ecdba5fd0115)
 
+## Getting Started
+
+```bash
+git clone https://github.com/leerob/music-player
+cd music-player
+pnpm install
+```
+
 ## Running Locally
 
-- Add local audio files to a top level `tracks/` folder (git ignored)
-- Create a new Postgres database
-- `pnpm db:generate`
-- `pnpm db:migrate`
-- `pnpm db:seed`
-- `pnpm dev`
-- Go to http://localhost:3000 🎉
+Use the included setup script to create your `.env` file:
 
-> [!WARNING]  
-> This also requires Vercel Blob. I'll need to create a setup script for that to automate.
+```bash
+pnpm db:setup
+```
+
+Add local audio files to a top level `tracks/` folder (git ignored).
+
+Then, run the database migrations and seed the database with a songs and playlists:
+
+```bash
+pnpm db:migrate
+pnpm db:seed
+```
+
+Finally, run the Next.js development server:
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
 
 ## Features
 

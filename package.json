@@ -8,6 +8,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "npx tsx lib/db/migrate.ts",
     "db:seed": "npx tsx lib/db/seed.ts",
+    "db:setup": "npx tsx lib/db/setup.ts",
     "db:seed-remote": "npx tsx lib/db/seed-remote.ts",
     "db:studio": "drizzle-kit studio"
   },
