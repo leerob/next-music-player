@@ -54,6 +54,90 @@ export function PlaybackControls() {
     }
   }, [volume, isMuted, audioRef]);
 
+  useEffect(() => {
+    if ('mediaSession' in navigator && currentTrack) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentTrack.name,
+        artist: currentTrack.artist,
+        album: currentTrack.album || undefined,
+        artwork: [
+          { src: currentTrack.imageUrl!, sizes: '512x512', type: 'image/jpeg' },
+        ],
+      });
+
+      navigator.mediaSession.setActionHandler('play', () => {
+        audioRef.current?.play();
+        togglePlayPause();
+      });
+
+      navigator.mediaSession.setActionHandler('pause', () => {
+        audioRef.current?.pause();
+        togglePlayPause();
+      });
+
+      navigator.mediaSession.setActionHandler(
+        'previoustrack',
+        playPreviousTrack
+      );
+
+      navigator.mediaSession.setActionHandler('nexttrack', playNextTrack);
+
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (audioRef.current && details.seekTime !== undefined) {
+          audioRef.current.currentTime = details.seekTime;
+          setCurrentTime(details.seekTime);
+        }
+      });
+
+      const updatePositionState = () => {
+        if (audioRef.current && !isNaN(audioRef.current.duration)) {
+          try {
+            navigator.mediaSession.setPositionState({
+              duration: audioRef.current.duration,
+              playbackRate: audioRef.current.playbackRate,
+              position: audioRef.current.currentTime,
+            });
+          } catch (error) {
+            console.error('Error updating position state:', error);
+          }
+        }
+      };
+
+      const handleLoadedMetadata = () => {
+        updatePositionState();
+      };
+
+      audioRef.current?.addEventListener('timeupdate', updatePositionState);
+      audioRef.current?.addEventListener(
+        'loadedmetadata',
+        handleLoadedMetadata
+      );
+
+      return () => {
+        audioRef.current?.removeEventListener(
+          'timeupdate',
+          updatePositionState
+        );
+        audioRef.current?.removeEventListener(
+          'loadedmetadata',
+          handleLoadedMetadata
+        );
+        navigator.mediaSession.setActionHandler('play', null);
+        navigator.mediaSession.setActionHandler('pause', null);
+        navigator.mediaSession.setActionHandler('previoustrack', null);
+        navigator.mediaSession.setActionHandler('nexttrack', null);
+        navigator.mediaSession.setActionHandler('seekto', null);
+      };
+    }
+  }, [
+    currentTrack,
+    playPreviousTrack,
+    playNextTrack,
+    togglePlayPause,
+    audioRef,
+    setCurrentTime,
+  ]);
+
   let formatTime = (time: number) => {
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);

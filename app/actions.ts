@@ -74,7 +74,15 @@ export async function deletePlaylistAction(
     return;
   }
 
-  await db.delete(playlists).where(eq(playlists.id, id));
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(playlistSongs)
+      .where(eq(playlistSongs.playlistId, id))
+      .execute();
+
+    await tx.delete(playlists).where(eq(playlists.id, id)).execute();
+  });
+
   revalidatePath('/', 'layout');
 
   if (shouldRedirect) {
