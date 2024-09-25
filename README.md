@@ -19,6 +19,7 @@ A nice GUI for playing/viewing local media files.
 
 ## Features
 
+- ✅ Uses MediaSession API to sync track metadata with system controls
 - ✅ Press space to play/pause from anywhere in the app
 - ✅ View for all tracks
 - ✅ Click on song row to play
