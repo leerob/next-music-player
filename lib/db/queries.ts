@@ -6,7 +6,7 @@ export let getAllSongs = async () => {
   return db.select().from(songs).orderBy(asc(songs.name));
 };
 
-export let getSongById = async (id: number) => {
+export let getSongById = async (id: string) => {
   return db.query.songs.findFirst({
     where: eq(songs.id, id),
   });
@@ -16,7 +16,7 @@ export let getAllPlaylists = async () => {
   return db.select().from(playlists).orderBy(desc(playlists.createdAt));
 };
 
-export let getPlaylistWithSongs = async (id: number) => {
+export let getPlaylistWithSongs = async (id: string) => {
   const result = await db.query.playlists.findFirst({
     where: eq(playlists.id, id),
     with: {
@@ -51,16 +51,16 @@ export let getPlaylistWithSongs = async (id: number) => {
 };
 
 export let addSongToPlaylist = async (
-  playlistId: number,
-  songId: number,
+  playlistId: string,
+  songId: string,
   order: number
 ) => {
   return db.insert(playlistSongs).values({ playlistId, songId, order });
 };
 
 export let removeSongFromPlaylist = async (
-  playlistId: number,
-  songId: number
+  playlistId: string,
+  songId: string
 ) => {
   return db
     .delete(playlistSongs)
@@ -72,16 +72,20 @@ export let removeSongFromPlaylist = async (
     );
 };
 
-export let createPlaylist = async (name: string, coverUrl?: string) => {
+export let createPlaylist = async (
+  id: string,
+  name: string,
+  coverUrl?: string
+) => {
   const result = await db
     .insert(playlists)
-    .values({ name, coverUrl })
+    .values({ id, name, coverUrl })
     .returning();
   return result[0];
 };
 
 export let updatePlaylist = async (
-  id: number,
+  id: string,
   name: string,
   coverUrl?: string
 ) => {
@@ -93,7 +97,7 @@ export let updatePlaylist = async (
   return result[0];
 };
 
-export let deletePlaylist = async (id: number) => {
+export let deletePlaylist = async (id: string) => {
   // First, delete all playlist songs
   await db.delete(playlistSongs).where(eq(playlistSongs.playlistId, id));
   // Then delete the playlist

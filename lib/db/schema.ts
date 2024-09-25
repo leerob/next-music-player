@@ -1,15 +1,15 @@
 import { relations } from 'drizzle-orm';
 import {
   pgTable,
-  serial,
   text,
   timestamp,
   integer,
   boolean,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 export let songs = pgTable('songs', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   artist: text('artist').notNull(),
   album: text('album'),
@@ -25,7 +25,7 @@ export let songs = pgTable('songs', {
 });
 
 export let playlists = pgTable('playlists', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   coverUrl: text('cover_url'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -33,11 +33,11 @@ export let playlists = pgTable('playlists', {
 });
 
 export let playlistSongs = pgTable('playlist_songs', {
-  id: serial('id').primaryKey(),
-  playlistId: integer('playlist_id')
+  id: uuid('id').primaryKey().defaultRandom(),
+  playlistId: uuid('playlist_id')
     .notNull()
     .references(() => playlists.id),
-  songId: integer('song_id')
+  songId: uuid('song_id')
     .notNull()
     .references(() => songs.id),
   order: integer('order').notNull(),

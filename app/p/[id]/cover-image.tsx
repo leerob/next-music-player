@@ -9,7 +9,7 @@ export function CoverImage({
   playlistId,
 }: {
   url: string | null;
-  playlistId: number;
+  playlistId: string;
 }) {
   let [state, formAction, pending] = useActionState(uploadPlaylistCoverAction, {
     success: false,

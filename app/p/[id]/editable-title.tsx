@@ -9,7 +9,7 @@ export function EditableTitle({
   playlistId,
   initialName,
 }: {
-  playlistId: number;
+  playlistId: string;
   initialName: string;
 }) {
   const [isEditing, setIsEditing] = useState(false);

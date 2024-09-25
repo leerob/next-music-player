@@ -14,7 +14,7 @@ export default async function PlaylistPage({
 }: {
   params: { id: string };
 }) {
-  const playlist = await getPlaylistWithSongs(Number(params.id));
+  const playlist = await getPlaylistWithSongs(params.id);
 
   if (!playlist) {
     notFound();

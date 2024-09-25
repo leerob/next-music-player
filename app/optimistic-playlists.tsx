@@ -5,7 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, MoreVertical, Trash } from 'lucide-react';
 import { useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { usePlayback } from '@/app/playback-context';
 import { createPlaylistAction, deletePlaylistAction } from './actions';
@@ -17,16 +17,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Playlist } from '@/lib/db/types';
+import { v4 as uuidv4 } from 'uuid';
 
 function PlaylistRow({ playlist }: { playlist: Playlist }) {
-  const pathname = usePathname();
-  const { deletePlaylist } = usePlaylist();
+  let pathname = usePathname();
+  let router = useRouter();
+  let { deletePlaylist } = usePlaylist();
 
-  async function handleDeletePlaylist(id: number) {
-    deletePlaylist(playlist.id);
-    let shouldRedirect = pathname === `/p/${id}`;
-    await deletePlaylistAction(id, shouldRedirect);
+  async function handleDeletePlaylist(id: string) {
+    deletePlaylist(id);
+
+    if (pathname === `/p/${id}`) {
+      router.prefetch('/');
+      router.push('/');
+    }
+
+    deletePlaylistAction(id);
+    router.refresh();
   }
+
   return (
     <li className="group relative">
       <Link
@@ -67,27 +76,32 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
 }
 
 export function OptimisticPlaylists() {
-  const { playlists, updatePlaylist } = usePlaylist();
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const playlistsContainerRef = useRef<HTMLUListElement>(null);
-  const pathname = usePathname();
-  const { registerPanelRef, handleKeyNavigation, setActivePanel } =
-    usePlayback();
+  let { playlists, updatePlaylist } = usePlaylist();
+  let searchInputRef = useRef<HTMLInputElement>(null);
+  let playlistsContainerRef = useRef<HTMLUListElement>(null);
+  let pathname = usePathname();
+  let router = useRouter();
+  let { registerPanelRef, handleKeyNavigation, setActivePanel } = usePlayback();
 
   useEffect(() => {
     registerPanelRef('sidebar', playlistsContainerRef);
   }, [registerPanelRef]);
 
   async function addPlaylistAction() {
-    const newPlaylist = {
-      id: Math.floor(Math.random() * 10000),
+    let newPlaylistId = uuidv4();
+    let newPlaylist = {
+      id: newPlaylistId,
       name: 'New Playlist',
       coverUrl: '',
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    updatePlaylist(newPlaylist.id, newPlaylist);
-    await createPlaylistAction();
+
+    updatePlaylist(newPlaylistId, newPlaylist);
+    router.prefetch(`/p/${newPlaylistId}`);
+    router.push(`/p/${newPlaylistId}`);
+    createPlaylistAction(newPlaylistId, 'New Playlist');
+    router.refresh();
   }
 
   return (

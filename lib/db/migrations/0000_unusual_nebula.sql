@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS "playlist_songs" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"playlist_id" integer NOT NULL,
-	"song_id" integer NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"playlist_id" uuid NOT NULL,
+	"song_id" uuid NOT NULL,
 	"order" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "playlists" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"cover_url" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS "playlists" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "songs" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"artist" text NOT NULL,
 	"album" text,

@@ -6,7 +6,6 @@
     "build": "next build",
     "start": "next start",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "npx tsx lib/db/migrate.ts",
     "db:seed": "npx tsx lib/db/seed.ts",
     "db:setup": "npx tsx lib/db/setup.ts",
     "db:seed-remote": "npx tsx lib/db/seed-remote.ts",
@@ -21,6 +20,7 @@
     "@types/node": "^22.7.0",
     "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^10.0.0",
     "@vercel/blob": "^0.24.0",
     "ai": "^3.4.2",
     "autoprefixer": "^10.4.20",
@@ -41,6 +41,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "1.1.5",
     "typescript": "^5.6.2",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8"
   }
 }

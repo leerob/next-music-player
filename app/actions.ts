@@ -2,21 +2,18 @@
 
 import { createPlaylist } from '@/lib/db/queries';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { db } from '@/lib/db/drizzle';
 import { playlists, playlistSongs } from '@/lib/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { put } from '@vercel/blob';
 
-export async function createPlaylistAction() {
+export async function createPlaylistAction(id: string, name: string) {
   // Let's only handle this on local for now
   if (process.env.VERCEL_ENV === 'production') {
     return;
   }
 
-  const playlist = await createPlaylist('New Playlist');
-  revalidatePath('/', 'layout');
-  redirect(`/p/${playlist.id}`);
+  await createPlaylist(id, name);
 }
 
 export async function uploadPlaylistCoverAction(_: any, formData: FormData) {
@@ -40,7 +37,7 @@ export async function uploadPlaylistCoverAction(_: any, formData: FormData) {
     await db
       .update(playlists)
       .set({ coverUrl: blob.url })
-      .where(eq(playlists.id, parseInt(playlistId)));
+      .where(eq(playlists.id, playlistId));
 
     revalidatePath(`/p/${playlistId}`);
 
@@ -52,7 +49,7 @@ export async function uploadPlaylistCoverAction(_: any, formData: FormData) {
 }
 
 export async function updatePlaylistNameAction(
-  playlistId: number,
+  playlistId: string,
   name: string
 ) {
   // Let's only handle this on local for now
@@ -65,10 +62,7 @@ export async function updatePlaylistNameAction(
   revalidatePath('/', 'layout');
 }
 
-export async function deletePlaylistAction(
-  id: number,
-  shouldRedirect: boolean
-) {
+export async function deletePlaylistAction(id: string) {
   // Let's only handle this on local for now
   if (process.env.VERCEL_ENV === 'production') {
     return;
@@ -82,15 +76,9 @@ export async function deletePlaylistAction(
 
     await tx.delete(playlists).where(eq(playlists.id, id)).execute();
   });
-
-  revalidatePath('/', 'layout');
-
-  if (shouldRedirect) {
-    redirect('/');
-  }
 }
 
-export async function addToPlaylistAction(playlistId: number, songId: number) {
+export async function addToPlaylistAction(playlistId: string, songId: string) {
   // Check if the song is already in the playlist
   const existingEntry = await db
     .select()

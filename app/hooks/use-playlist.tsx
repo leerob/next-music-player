@@ -11,8 +11,8 @@ import { Playlist } from '@/lib/db/types';
 
 type PlaylistContextType = {
   playlists: Playlist[];
-  updatePlaylist: (id: number, updates: Partial<Playlist>) => void;
-  deletePlaylist: (id: number) => void;
+  updatePlaylist: (id: string, updates: Partial<Playlist>) => void;
+  deletePlaylist: (id: string) => void;
 };
 
 const PlaylistContext = createContext<PlaylistContextType | undefined>(
@@ -20,8 +20,8 @@ const PlaylistContext = createContext<PlaylistContextType | undefined>(
 );
 
 type OptimisticAction =
-  | { type: 'update'; id: number; updates: Partial<Playlist> }
-  | { type: 'delete'; id: number };
+  | { type: 'update'; id: string; updates: Partial<Playlist> }
+  | { type: 'delete'; id: string };
 
 export function PlaylistProvider({
   children,
@@ -50,11 +50,11 @@ export function PlaylistProvider({
     }
   );
 
-  const updatePlaylist = (id: number, updates: Partial<Playlist>) => {
+  const updatePlaylist = (id: string, updates: Partial<Playlist>) => {
     setOptimisticPlaylists({ type: 'update', id, updates });
   };
 
-  const deletePlaylist = (id: number) => {
+  const deletePlaylist = (id: string) => {
     setOptimisticPlaylists({ type: 'delete', id });
   };
 
