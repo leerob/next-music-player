@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { updatePlaylistNameAction } from '@/app/actions';
-import { usePlaylist } from '@/app/playlist-context';
+import { usePlaylist } from '@/app/hooks/use-playlist';
 
 export function EditableTitle({
   playlistId,

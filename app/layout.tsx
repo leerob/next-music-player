@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google';
 import { NowPlaying } from './now-playing';
 import { PlaybackProvider } from './playback-context';
 import { getAllPlaylists } from '@/lib/db/queries';
-import { PlaylistProvider } from './playlist-context';
 import { OptimisticPlaylists } from './optimistic-playlists';
+import { PlaylistProvider } from './hooks/use-playlist';
 
 export const metadata: Metadata = {
   title: 'Next.js Music Player',

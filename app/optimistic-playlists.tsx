@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { usePlayback } from '@/app/playback-context';
 import { createPlaylistAction, deletePlaylistAction } from './actions';
-import { usePlaylist } from './playlist-context';
+import { usePlaylist } from '@/app/hooks/use-playlist';
 import {
   DropdownMenu,
   DropdownMenuContent,
