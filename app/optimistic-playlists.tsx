@@ -1,6 +1,5 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, MoreVertical, Trash } from 'lucide-react';
 import { useRef, useEffect } from 'react';
@@ -18,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Playlist } from '@/lib/db/types';
 import { v4 as uuidv4 } from 'uuid';
+import { SearchInput } from './search';
 
 function PlaylistRow({ playlist }: { playlist: Playlist }) {
   let pathname = usePathname();
@@ -77,7 +77,6 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
 
 export function OptimisticPlaylists() {
   let { playlists, updatePlaylist } = usePlaylist();
-  let searchInputRef = useRef<HTMLInputElement>(null);
   let playlistsContainerRef = useRef<HTMLUListElement>(null);
   let pathname = usePathname();
   let router = useRouter();
@@ -110,12 +109,7 @@ export function OptimisticPlaylists() {
       onClick={() => setActivePanel('sidebar')}
     >
       <div className="m-4">
-        <Input
-          ref={searchInputRef}
-          type="search"
-          className="mb-4 bg-[#1A1A1A] border-[#333] text-xs h-8 focus-visible:ring-0"
-          placeholder="Search"
-        />
+        <SearchInput />
         <div className="mb-6">
           <Link
             href="/"

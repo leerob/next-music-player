@@ -17,8 +17,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { usePlaylist } from '@/app/hooks/use-playlist';
 import { addToPlaylistAction } from '@/app/actions';
+import Highlighter from 'react-highlight-words';
 
-export function TrackRow({ track, index }: { track: Song; index: number }) {
+export function TrackRow({
+  track,
+  index,
+  query,
+}: {
+  track: Song;
+  index: number;
+  query?: string;
+}) {
   let {
     currentTrack,
     playTrack,
@@ -53,6 +62,18 @@ export function TrackRow({ track, index }: { track: Song; index: number }) {
     }
   }
 
+  const highlightText = (text: string) => {
+    return query ? (
+      <Highlighter
+        searchWords={[query]}
+        autoEscape={true}
+        textToHighlight={text}
+      />
+    ) : (
+      text
+    );
+  };
+
   return (
     <tr
       className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 select-none ${
@@ -81,18 +102,18 @@ export function TrackRow({ track, index }: { track: Song; index: number }) {
             className="size-5 mr-2 object-cover"
           />
           <div className="font-medium truncate max-w-[180px] sm:max-w-[200px] text-[#d1d5db]">
-            {track.name}
+            {highlightText(track.name)}
             <span className="sm:hidden text-gray-400 ml-1">
-              • {track.artist}
+              • {highlightText(track.artist)}
             </span>
           </div>
         </div>
       </td>
       <td className="py-[2px] px-2 hidden sm:table-cell text-[#d1d5db]">
-        {track.artist}
+        {highlightText(track.artist)}
       </td>
       <td className="py-[2px] px-2 hidden md:table-cell text-[#d1d5db]">
-        {track.album}
+        {highlightText(track.album!)}
       </td>
       <td className="py-[2px] px-2 tabular-nums text-[#d1d5db]">
         {formatDuration(track.duration)}
@@ -162,10 +183,15 @@ export function TrackRow({ track, index }: { track: Song; index: number }) {
   );
 }
 
-export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
+export function TrackTable({
+  playlist,
+  query,
+}: {
+  playlist: PlaylistWithSongs;
+  query?: string;
+}) {
   let tableRef = useRef<HTMLTableElement>(null);
-  let { registerPanelRef, handleKeyNavigation, setActivePanel, setPlaylist } =
-    usePlayback();
+  let { registerPanelRef, setActivePanel, setPlaylist } = usePlayback();
 
   useEffect(() => {
     registerPanelRef('tracklist', tableRef);
@@ -193,7 +219,7 @@ export function TrackTable({ playlist }: { playlist: PlaylistWithSongs }) {
       </thead>
       <tbody className="mt-[1px]">
         {playlist.songs.map((track: Song, index: number) => (
-          <TrackRow key={track.id} track={track} index={index} />
+          <TrackRow key={track.id} track={track} index={index} query={query} />
         ))}
       </tbody>
     </table>

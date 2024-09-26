@@ -35,6 +35,12 @@ Finally, run the Next.js development server:
 pnpm dev
 ```
 
+You can view your database contents with Drizzle Studio locally:
+
+```bash
+pnpm db:studio
+```
+
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
 
 ## Features
@@ -52,6 +58,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 - ✅ Create a new playlist in the UI
 - ✅ Image upload to Vercel Blob for playlist images
 - ✅ Add/remove songs to a playist in the UI
+- ✅ Basic search over songs
 - Persist active song to storage
-- Hook up search (playlists or songs? Not sure)
-- Hook up the volume control
+- Hook up the volume controls

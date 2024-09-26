@@ -4,6 +4,7 @@ import { parseBuffer } from 'music-metadata';
 import { db } from './drizzle';
 import { songs, playlists, playlistSongs } from './schema';
 import { eq } from 'drizzle-orm';
+import { put } from '@vercel/blob';
 
 async function seed() {
   console.log('Starting seed process...');
@@ -13,24 +14,35 @@ async function seed() {
 }
 
 async function seedSongs() {
-  const tracksDir = path.join(process.cwd(), 'tracks');
-  const files = await fs.readdir(tracksDir);
+  let tracksDir = path.join(process.cwd(), 'tracks');
+  let files = await fs.readdir(tracksDir);
 
   for (let file of files.filter(
     (file) => path.extname(file).toLowerCase() === '.mp3'
   )) {
-    const filePath = path.join(tracksDir, file);
-    const buffer = await fs.readFile(filePath);
-    const metadata = await parseBuffer(buffer, { mimeType: 'audio/mpeg' });
+    let filePath = path.join(tracksDir, file);
+    let buffer = await fs.readFile(filePath);
+    let metadata = await parseBuffer(buffer, { mimeType: 'audio/mpeg' });
 
     let imageUrl;
     if (metadata.common.picture && metadata.common.picture.length > 0) {
-      const picture = metadata.common.picture[0];
-      const base64Image = Buffer.from(picture.data).toString('base64');
-      imageUrl = `data:${picture.format};base64,${base64Image}`;
+      let picture = metadata.common.picture[0];
+      let imageBuffer = Buffer.from(picture.data);
+      let { url } = await put(
+        `album_covers/${file}.${picture.format}`,
+        imageBuffer,
+        {
+          access: 'public',
+        }
+      );
+      imageUrl = url;
     }
 
-    const songData = {
+    let { url: audioUrl } = await put(`audio/${file}`, buffer, {
+      access: 'public',
+    });
+
+    let songData = {
       name: metadata.common.title || path.parse(file).name,
       artist: metadata.common.artist || 'Unknown Artist',
       album: metadata.common.album || 'Unknown Album',
@@ -38,13 +50,13 @@ async function seedSongs() {
       genre: metadata.common.genre?.[0] || 'Unknown Genre',
       bpm: metadata.common.bpm ? Math.round(metadata.common.bpm) : null,
       key: metadata.common.key || null,
-      imageUrl: imageUrl,
-      audioUrl: `file://${filePath}`,
-      isLocal: true,
+      imageUrl,
+      audioUrl,
+      isLocal: false,
     };
 
     // Check if the song already exists
-    const existingSong = await db
+    let existingSong = await db
       .select()
       .from(songs)
       .where(eq(songs.audioUrl, songData.audioUrl))

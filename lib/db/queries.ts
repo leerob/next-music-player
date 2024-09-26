@@ -1,68 +1,89 @@
-import { eq, sql, desc, asc, and } from 'drizzle-orm';
+import { eq, sql, desc, asc, and, or } from 'drizzle-orm';
+import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
 import { db } from './drizzle';
 import { songs, playlists, playlistSongs } from './schema';
 
-export let getAllSongs = async () => {
-  return db.select().from(songs).orderBy(asc(songs.name));
-};
+export let getAllSongs = unstable_cache(
+  async () => {
+    return db.select().from(songs).orderBy(asc(songs.name));
+  },
+  ['all-songs'],
+  { tags: ['songs'] }
+);
 
-export let getSongById = async (id: string) => {
-  return db.query.songs.findFirst({
-    where: eq(songs.id, id),
-  });
-};
+export let getSongById = unstable_cache(
+  async (id: string) => {
+    return db.query.songs.findFirst({
+      where: eq(songs.id, id),
+    });
+  },
+  ['song-by-id'],
+  { tags: ['songs'] }
+);
 
-export let getAllPlaylists = async () => {
-  return db.select().from(playlists).orderBy(desc(playlists.createdAt));
-};
+export let getAllPlaylists = unstable_cache(
+  async () => {
+    return db.select().from(playlists).orderBy(desc(playlists.createdAt));
+  },
+  ['all-playlists'],
+  { tags: ['playlists'] }
+);
 
-export let getPlaylistWithSongs = async (id: string) => {
-  const result = await db.query.playlists.findFirst({
-    where: eq(playlists.id, id),
-    with: {
-      playlistSongs: {
-        columns: {
-          order: true,
+export let getPlaylistWithSongs = unstable_cache(
+  async (id: string) => {
+    let result = await db.query.playlists.findFirst({
+      where: eq(playlists.id, id),
+      with: {
+        playlistSongs: {
+          columns: {
+            order: true,
+          },
+          with: {
+            song: true,
+          },
+          orderBy: asc(playlistSongs.order),
         },
-        with: {
-          song: true,
-        },
-        orderBy: asc(playlistSongs.order),
       },
-    },
-  });
+    });
 
-  if (!result) return null;
+    if (!result) return null;
 
-  const songs = result.playlistSongs.map((ps) => ({
-    ...ps.song,
-    order: ps.order,
-  }));
+    let songs = result.playlistSongs.map((ps) => ({
+      ...ps.song,
+      order: ps.order,
+    }));
 
-  const trackCount = songs.length;
-  const duration = songs.reduce((total, song) => total + song.duration, 0);
+    let trackCount = songs.length;
+    let duration = songs.reduce((total, song) => total + song.duration, 0);
 
-  return {
-    ...result,
-    songs,
-    trackCount,
-    duration,
-  };
-};
+    return {
+      ...result,
+      songs,
+      trackCount,
+      duration,
+    };
+  },
+  ['playlist-with-songs'],
+  { tags: ['playlists', 'songs'] }
+);
 
 export let addSongToPlaylist = async (
   playlistId: string,
   songId: string,
   order: number
 ) => {
-  return db.insert(playlistSongs).values({ playlistId, songId, order });
+  let result = await db
+    .insert(playlistSongs)
+    .values({ playlistId, songId, order });
+  revalidateTag('playlists');
+  return result;
 };
 
 export let removeSongFromPlaylist = async (
   playlistId: string,
   songId: string
 ) => {
-  return db
+  let result = await db
     .delete(playlistSongs)
     .where(
       and(
@@ -70,6 +91,8 @@ export let removeSongFromPlaylist = async (
         eq(playlistSongs.songId, songId)
       )
     );
+  revalidateTag('playlists');
+  return result;
 };
 
 export let createPlaylist = async (
@@ -77,10 +100,11 @@ export let createPlaylist = async (
   name: string,
   coverUrl?: string
 ) => {
-  const result = await db
+  let result = await db
     .insert(playlists)
     .values({ id, name, coverUrl })
     .returning();
+  revalidateTag('playlists');
   return result[0];
 };
 
@@ -89,11 +113,12 @@ export let updatePlaylist = async (
   name: string,
   coverUrl?: string
 ) => {
-  const result = await db
+  let result = await db
     .update(playlists)
     .set({ name, coverUrl, updatedAt: new Date() })
     .where(eq(playlists.id, id))
     .returning();
+  revalidateTag('playlists');
   return result[0];
 };
 
@@ -101,19 +126,43 @@ export let deletePlaylist = async (id: string) => {
   // First, delete all playlist songs
   await db.delete(playlistSongs).where(eq(playlistSongs.playlistId, id));
   // Then delete the playlist
-  return db.delete(playlists).where(eq(playlists.id, id));
+  let result = await db.delete(playlists).where(eq(playlists.id, id));
+
+  revalidateTag('playlists');
+  return result;
 };
 
-export let searchSongs = async (query: string) => {
-  return db
-    .select()
-    .from(songs)
-    .where(
-      sql`${songs.name} ILIKE ${`%${query}%`} OR ${songs.artist} ILIKE ${`%${query}%`} OR ${songs.album} ILIKE ${`%${query}%`}`
-    )
-    .orderBy(asc(songs.name));
-};
+export let searchSongs = unstable_cache(
+  async (searchTerm: string) => {
+    const similarityExpression = sql`GREATEST(
+      similarity(${songs.name}, ${searchTerm}),
+      similarity(${songs.artist}, ${searchTerm}),
+      similarity(COALESCE(${songs.album}, ''), ${searchTerm})
+    )`;
 
-export let getRecentlyAddedSongs = async (limit: number = 10) => {
-  return db.select().from(songs).orderBy(desc(songs.createdAt)).limit(limit);
-};
+    return db
+      .select({
+        id: songs.id,
+        name: songs.name,
+        artist: songs.artist,
+        album: songs.album,
+        duration: songs.duration,
+        imageUrl: songs.imageUrl,
+        audioUrl: songs.audioUrl,
+        similarity: sql`${similarityExpression}::float`,
+      })
+      .from(songs)
+      .orderBy(desc(similarityExpression), asc(songs.name))
+      .limit(50);
+  },
+  ['search-songs'],
+  { tags: ['songs'] }
+);
+
+export let getRecentlyAddedSongs = unstable_cache(
+  async (limit: number = 10) => {
+    return db.select().from(songs).orderBy(desc(songs.createdAt)).limit(limit);
+  },
+  ['recently-added-songs'],
+  { tags: ['songs'] }
+);
