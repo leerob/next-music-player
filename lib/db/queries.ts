@@ -1,5 +1,5 @@
-import { eq, sql, desc, asc, and, or } from 'drizzle-orm';
-import { unstable_cache, revalidateTag, revalidatePath } from 'next/cache';
+import { eq, sql, desc, asc, and } from 'drizzle-orm';
+import { unstable_cache, revalidateTag } from 'next/cache';
 import { db } from './drizzle';
 import { songs, playlists, playlistSongs } from './schema';
 

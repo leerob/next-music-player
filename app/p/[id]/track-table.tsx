@@ -109,7 +109,7 @@ export function TrackRow({
           </div>
         </div>
       </td>
-      <td className="py-[2px] px-2 hidden sm:table-cell text-[#d1d5db]">
+      <td className="py-[2px] px-2 hidden sm:table-cell text-[#d1d5db] max-w-40 truncate">
         {highlightText(track.artist)}
       </td>
       <td className="py-[2px] px-2 hidden md:table-cell text-[#d1d5db]">

@@ -32,7 +32,7 @@ export function SearchInput(props: { value?: string }) {
           setValue(e.currentTarget.value);
         }}
       />
-      {value && (
+      {value ? (
         <Button
           type="button"
           variant="ghost"
@@ -43,6 +43,10 @@ export function SearchInput(props: { value?: string }) {
           <X className="h-4 w-4" />
           <span className="sr-only">Clear search</span>
         </Button>
+      ) : (
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center bg-neutral-800 rounded text-neutral-400 border border-neutral-700">
+          <span className="font-mono text-xs">/</span>
+        </div>
       )}
     </div>
   );

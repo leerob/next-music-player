@@ -20,7 +20,11 @@ Use the included setup script to create your `.env` file:
 pnpm db:setup
 ```
 
-Add local audio files to a top level `tracks/` folder (git ignored).
+Add local audio files to a top level `tracks/` folder (git ignored). One option to download files is `yt-dlp`. You can provide arguments to download the song metadata, as well as the cover image, too.
+
+```bash
+yt-dlp -x --audio-format mp3 --add-metadata --embed-thumbnail "https://www.youtube.com/playlist?list=..."
+```
 
 Then, run the database migrations and seed the database with a songs and playlists:
 
