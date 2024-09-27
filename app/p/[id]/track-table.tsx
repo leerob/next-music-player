@@ -3,7 +3,7 @@
 import { usePlayback } from '@/app/playback-context';
 import { PlaylistWithSongs, Song } from '@/lib/db/types';
 import { formatDuration, highlightText } from '@/lib/utils';
-import { useRef, useEffect, memo } from 'react';
+import { useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Play, Pause, Plus } from 'lucide-react';
 import {
@@ -19,7 +19,7 @@ import { usePlaylist } from '@/app/hooks/use-playlist';
 import { addToPlaylistAction } from '@/app/actions';
 import Image from 'next/image';
 
-export const TrackRow = memo(function TrackRow({
+function TrackRow({
   track,
   index,
   query,
@@ -172,7 +172,7 @@ export const TrackRow = memo(function TrackRow({
       </td>
     </tr>
   );
-});
+}
 
 export function TrackTable({
   playlist,

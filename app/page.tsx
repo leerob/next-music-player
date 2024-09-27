@@ -5,9 +5,9 @@ import { getAllSongs, searchSongs } from '@/lib/db/queries';
 export default async function AllTracksPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q: string }>;
 }) {
-  const query = searchParams.q;
+  const query = (await searchParams).q;
   const songs = query ? await searchSongs(query) : await getAllSongs();
 
   return (
