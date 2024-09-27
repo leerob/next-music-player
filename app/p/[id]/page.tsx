@@ -12,9 +12,10 @@ import { EditableTitle } from './editable-title';
 export default async function PlaylistPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const playlist = await getPlaylistWithSongs(params.id);
+  let id = (await params).id;
+  let playlist = await getPlaylistWithSongs(id);
 
   if (!playlist) {
     notFound();

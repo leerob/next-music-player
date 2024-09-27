@@ -4,15 +4,15 @@ import path from 'path';
 
 export async function GET(
   _: any,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
-  const filename = params.filename;
-  const audioDirectory = path.join(process.cwd(), 'tracks');
-  const filePath = path.join(audioDirectory, filename);
+  let filename = (await params).filename;
+  let audioDirectory = path.join(process.cwd(), 'tracks');
+  let filePath = path.join(audioDirectory, filename);
 
   try {
-    const fileBuffer = await fs.readFile(filePath);
-    const response = new NextResponse(fileBuffer);
+    let fileBuffer = await fs.readFile(filePath);
+    let response = new NextResponse(fileBuffer);
 
     response.headers.set('Content-Type', 'audio/mpeg');
     response.headers.set('Content-Length', fileBuffer.byteLength.toString());
