@@ -2,8 +2,8 @@
 
 import { usePlayback } from '@/app/playback-context';
 import { PlaylistWithSongs, Song } from '@/lib/db/types';
-import { formatDuration } from '@/lib/utils';
-import { useRef, useEffect } from 'react';
+import { formatDuration, highlightText } from '@/lib/utils';
+import { useRef, useEffect, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Play, Pause, Plus } from 'lucide-react';
 import {
@@ -17,9 +17,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { usePlaylist } from '@/app/hooks/use-playlist';
 import { addToPlaylistAction } from '@/app/actions';
-import Highlighter from 'react-highlight-words';
+import Image from 'next/image';
 
-export function TrackRow({
+export const TrackRow = memo(function TrackRow({
   track,
   index,
   query,
@@ -62,18 +62,6 @@ export function TrackRow({
     }
   }
 
-  const highlightText = (text: string) => {
-    return query ? (
-      <Highlighter
-        searchWords={[query]}
-        autoEscape={true}
-        textToHighlight={text}
-      />
-    ) : (
-      text
-    );
-  };
-
   return (
     <tr
       className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 select-none ${
@@ -96,24 +84,27 @@ export function TrackRow({
       </td>
       <td className="py-[2px] px-2">
         <div className="flex items-center">
-          <img
-            src={track.imageUrl || '/placeholder.svg'}
-            alt={`${track.album} cover`}
-            className="size-5 mr-2 object-cover"
-          />
+          <div className="relative size-5 mr-2">
+            <Image
+              src={track.imageUrl || '/placeholder.svg'}
+              alt={`${track.album} cover`}
+              fill
+              className="object-cover"
+            />
+          </div>
           <div className="font-medium truncate max-w-[180px] sm:max-w-[200px] text-[#d1d5db]">
-            {highlightText(track.name)}
+            {highlightText(track.name, query)}
             <span className="sm:hidden text-gray-400 ml-1">
-              • {highlightText(track.artist)}
+              • {highlightText(track.artist, query)}
             </span>
           </div>
         </div>
       </td>
       <td className="py-[2px] px-2 hidden sm:table-cell text-[#d1d5db] max-w-40 truncate">
-        {highlightText(track.artist)}
+        {highlightText(track.artist, query)}
       </td>
       <td className="py-[2px] px-2 hidden md:table-cell text-[#d1d5db]">
-        {highlightText(track.album!)}
+        {highlightText(track.album!, query)}
       </td>
       <td className="py-[2px] px-2 tabular-nums text-[#d1d5db]">
         {formatDuration(track.duration)}
@@ -181,7 +172,7 @@ export function TrackRow({
       </td>
     </tr>
   );
-}
+});
 
 export function TrackTable({
   playlist,
