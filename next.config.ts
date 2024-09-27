@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
         port: '',
-        pathname: '/album_covers/**',
+        pathname: '/**',
       },
     ],
   },
