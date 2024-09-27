@@ -68,3 +68,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* There's custom focus styles for the TrackTable */
+tr:focus {
+  outline: none;
+}

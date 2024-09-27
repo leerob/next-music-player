@@ -3,7 +3,7 @@
 import { usePlayback } from '@/app/playback-context';
 import { PlaylistWithSongs, Song } from '@/lib/db/types';
 import { formatDuration, highlightText } from '@/lib/utils';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Play, Pause, Plus } from 'lucide-react';
 import {
@@ -23,10 +23,14 @@ function TrackRow({
   track,
   index,
   query,
+  isSelected,
+  onSelect,
 }: {
   track: Song;
   index: number;
   query?: string;
+  isSelected: boolean;
+  onSelect: () => void;
 }) {
   let {
     currentTrack,
@@ -38,10 +42,13 @@ function TrackRow({
   } = usePlayback();
   let { playlists } = usePlaylist();
 
+  const [isFocused, setIsFocused] = useState(false);
   let isCurrentTrack = currentTrack?.name === track.name;
 
-  function onClickTrackRow(_: any) {
+  function onClickTrackRow(e: React.MouseEvent) {
+    e.preventDefault();
     setActivePanel('tracklist');
+    onSelect();
     if (isCurrentTrack) {
       togglePlayPause();
     } else {
@@ -52,6 +59,7 @@ function TrackRow({
   function onKeyDownTrackRow(e: React.KeyboardEvent<HTMLTableRowElement>) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      onSelect();
       if (isCurrentTrack) {
         togglePlayPause();
       } else {
@@ -64,12 +72,14 @@ function TrackRow({
 
   return (
     <tr
-      className={`group cursor-pointer hover:bg-[#1A1A1A] focus-within:bg-[#1A1A1A] focus-within:outline-none focus-within:ring-[0.5px] focus-within:ring-gray-400 select-none ${
+      className={`group cursor-pointer hover:bg-[#1A1A1A] select-none relative ${
         isCurrentTrack ? 'bg-[#1A1A1A]' : ''
       }`}
       tabIndex={0}
       onClick={onClickTrackRow}
       onKeyDown={onKeyDownTrackRow}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
     >
       <td className="py-[2px] pl-3 pr-2 tabular-nums w-10 text-center">
         {isCurrentTrack && isPlaying ? (
@@ -170,6 +180,9 @@ function TrackRow({
           </DropdownMenu>
         </div>
       </td>
+      {(isSelected || isFocused) && (
+        <div className="absolute inset-0 border border-[#1e3a8a] pointer-events-none" />
+      )}
     </tr>
   );
 }
@@ -183,6 +196,7 @@ export function TrackTable({
 }) {
   let tableRef = useRef<HTMLTableElement>(null);
   let { registerPanelRef, setActivePanel, setPlaylist } = usePlayback();
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
   useEffect(() => {
     registerPanelRef('tracklist', tableRef);
@@ -210,7 +224,14 @@ export function TrackTable({
       </thead>
       <tbody className="mt-[1px]">
         {playlist.songs.map((track: Song, index: number) => (
-          <TrackRow key={track.id} track={track} index={index} query={query} />
+          <TrackRow
+            key={track.id}
+            track={track}
+            index={index}
+            query={query}
+            isSelected={selectedTrackId === track.id}
+            onSelect={() => setSelectedTrackId(track.id)}
+          />
         ))}
       </tbody>
     </table>
