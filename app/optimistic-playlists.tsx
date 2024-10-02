@@ -19,6 +19,8 @@ import { Playlist } from '@/lib/db/types';
 import { v4 as uuidv4 } from 'uuid';
 import { SearchInput } from './search';
 
+let isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production';
+
 function PlaylistRow({ playlist }: { playlist: Playlist }) {
   let pathname = usePathname();
   let router = useRouter();
@@ -62,9 +64,9 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-36">
             <DropdownMenuItem
+              disabled={isProduction}
               onClick={() => handleDeletePlaylist(playlist.id)}
               className="text-xs"
-              disabled
             >
               <Trash className="mr-2 size-3" />
               Delete Playlist
@@ -130,11 +132,11 @@ export function OptimisticPlaylists() {
           </Link>
           <form action={addPlaylistAction}>
             <Button
+              disabled={isProduction}
               variant="ghost"
               size="icon"
               className="h-5 w-5"
               type="submit"
-              disabled
             >
               <Plus className="w-3 h-3 text-gray-400" />
               <span className="sr-only">Add new playlist</span>

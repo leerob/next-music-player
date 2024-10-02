@@ -42,7 +42,8 @@ function TrackRow({
   } = usePlayback();
   let { playlists } = usePlaylist();
 
-  const [isFocused, setIsFocused] = useState(false);
+  let [isFocused, setIsFocused] = useState(false);
+  let isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production';
   let isCurrentTrack = currentTrack?.name === track.name;
 
   function onClickTrackRow(e: React.MouseEvent) {
@@ -124,6 +125,7 @@ function TrackRow({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
+                disabled={isProduction}
                 variant="ghost"
                 size="icon"
                 className="h-5 w-5 text-gray-400 hover:text-white focus:text-white"
@@ -164,7 +166,6 @@ function TrackRow({
                 <DropdownMenuSubContent className="w-48">
                   {playlists.map((playlist) => (
                     <DropdownMenuItem
-                      disabled
                       className="text-xs"
                       key={playlist.id}
                       onClick={(e) => {
