@@ -64,6 +64,7 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
             <DropdownMenuItem
               onClick={() => handleDeletePlaylist(playlist.id)}
               className="text-xs"
+              disabled
             >
               <Trash className="mr-2 size-3" />
               Delete Playlist

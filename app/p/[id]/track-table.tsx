@@ -164,6 +164,7 @@ function TrackRow({
                 <DropdownMenuSubContent className="w-48">
                   {playlists.map((playlist) => (
                     <DropdownMenuItem
+                      disabled
                       className="text-xs"
                       key={playlist.id}
                       onClick={(e) => {
