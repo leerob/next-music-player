@@ -133,6 +133,7 @@ export function OptimisticPlaylists() {
               size="icon"
               className="h-5 w-5"
               type="submit"
+              disabled
             >
               <Plus className="w-3 h-3 text-gray-400" />
               <span className="sr-only">Add new playlist</span>
