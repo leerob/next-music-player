@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, MoreVertical, Trash } from 'lucide-react';
-import { useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { usePlayback } from '@/app/playback-context';
-import { createPlaylistAction, deletePlaylistAction } from './actions';
-import { usePlaylist } from '@/app/hooks/use-playlist';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Plus, MoreVertical, Trash } from "lucide-react";
+import { useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { usePlayback } from "@/app/playback-context";
+import { createPlaylistAction, deletePlaylistAction } from "./actions";
+import { usePlaylist } from "@/app/hooks/use-playlist";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Playlist } from '@/lib/db/types';
-import { v4 as uuidv4 } from 'uuid';
-import { SearchInput } from './search';
+} from "@/components/ui/dropdown-menu";
+import { Playlist } from "@/lib/db/types";
+import { v4 as uuidv4 } from "uuid";
+import { SearchInput } from "./search";
 
-let isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production';
+let isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
 
 function PlaylistRow({ playlist }: { playlist: Playlist }) {
   let pathname = usePathname();
@@ -30,8 +30,8 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
     deletePlaylist(id);
 
     if (pathname === `/p/${id}`) {
-      router.prefetch('/');
-      router.push('/');
+      router.prefetch("/");
+      router.push("/");
     }
 
     deletePlaylistAction(id);
@@ -43,8 +43,8 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
       <Link
         prefetch={true}
         href={`/p/${playlist.id}`}
-        className={`block py-1 px-4 cursor-pointer hover:bg-[#1A1A1A] text-[#d1d5db] focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
-          pathname === `/p/${playlist.id}` ? 'bg-[#1A1A1A]' : ''
+        className={`block py-2 px-4 cursor-pointer hover:bg-[#1A1A1A] text-[#d1d5db] focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
+          pathname === `/p/${playlist.id}` ? "bg-[#1A1A1A]" : ""
         }`}
         tabIndex={0}
       >
@@ -56,7 +56,7 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-gray-400 hover:text-white focus:text-white"
+              className="h-8 w-8 text-gray-400 hover:text-white focus:text-white"
             >
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Playlist options</span>
@@ -66,9 +66,9 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
             <DropdownMenuItem
               disabled={isProduction}
               onClick={() => handleDeletePlaylist(playlist.id)}
-              className="text-xs"
+              className="text-sm"
             >
-              <Trash className="mr-2 size-3" />
+              <Trash className="mr-2 size-4" />
               Delete Playlist
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -86,15 +86,15 @@ export function OptimisticPlaylists() {
   let { registerPanelRef, handleKeyNavigation, setActivePanel } = usePlayback();
 
   useEffect(() => {
-    registerPanelRef('sidebar', playlistsContainerRef);
+    registerPanelRef("sidebar", playlistsContainerRef);
   }, [registerPanelRef]);
 
   async function addPlaylistAction() {
     let newPlaylistId = uuidv4();
     let newPlaylist = {
       id: newPlaylistId,
-      name: 'New Playlist',
-      coverUrl: '',
+      name: "New Playlist",
+      coverUrl: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -102,22 +102,22 @@ export function OptimisticPlaylists() {
     updatePlaylist(newPlaylistId, newPlaylist);
     router.prefetch(`/p/${newPlaylistId}`);
     router.push(`/p/${newPlaylistId}`);
-    createPlaylistAction(newPlaylistId, 'New Playlist');
+    createPlaylistAction(newPlaylistId, "New Playlist");
     router.refresh();
   }
 
   return (
     <div
       className="hidden md:block w-56 bg-[#121212] h-[100dvh] overflow-auto"
-      onClick={() => setActivePanel('sidebar')}
+      onClick={() => setActivePanel("sidebar")}
     >
       <div className="m-4">
         <SearchInput />
         <div className="mb-6">
           <Link
             href="/"
-            className={`block py-1 px-4 -mx-4 text-xs text-[#d1d5db] hover:bg-[#1A1A1A] transition-colors focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
-              pathname === '/' ? 'bg-[#1A1A1A]' : ''
+            className={`block py-2 px-4 -mx-4 text-sm text-[#d1d5db] hover:bg-[#1A1A1A] transition-colors focus:outline-none focus:ring-[0.5px] focus:ring-gray-400 ${
+              pathname === "/" ? "bg-[#1A1A1A]" : ""
             }`}
           >
             All Tracks
@@ -126,7 +126,7 @@ export function OptimisticPlaylists() {
         <div className="flex justify-between items-center mb-4">
           <Link
             href="/"
-            className="text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+            className="text-sm font-semibold text-gray-400 hover:text-white transition-colors"
           >
             Playlists
           </Link>
@@ -135,7 +135,7 @@ export function OptimisticPlaylists() {
               disabled={isProduction}
               variant="ghost"
               size="icon"
-              className="h-5 w-5"
+              className="h-6 w-6"
               type="submit"
             >
               <Plus className="w-3 h-3 text-gray-400" />
@@ -147,8 +147,8 @@ export function OptimisticPlaylists() {
       <ScrollArea className="h-[calc(100dvh-180px)]">
         <ul
           ref={playlistsContainerRef}
-          className="space-y-0.5 text-xs mt-[1px]"
-          onKeyDown={(e) => handleKeyNavigation(e, 'sidebar')}
+          className="space-y-0.5 text-sm mt-[1px]"
+          onKeyDown={(e) => handleKeyNavigation(e, "sidebar")}
         >
           {playlists.map((playlist) => (
             <PlaylistRow key={playlist.id} playlist={playlist} />

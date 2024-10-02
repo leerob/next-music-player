@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { usePlayback } from './playback-context';
-import { PlaybackControls } from './playback-controls';
+import { usePlayback } from "./playback-context";
+import { PlaybackControls } from "./playback-controls";
 
 export function NowPlaying() {
   let { currentTrack } = usePlayback();
 
   return (
     <>
-      <div className="hidden md:block w-56 p-4 bg-[#121212] overflow-auto">
+      <div className="hidden md:block w-80 p-6 bg-[#121212] overflow-auto">
         {currentTrack ? (
           <>
-            <h2 className="mb-3 text-sm font-semibold text-gray-200">
+            <h2 className="mb-4 text-sm font-semibold text-gray-200">
               Now Playing
             </h2>
             <img
@@ -19,7 +19,7 @@ export function NowPlaying() {
               alt="Current track"
               className="w-full aspect-square object-cover mb-3"
             />
-            <div className="space-y-1 text-xs">
+            <div className="space-y-1 text-sm">
               <div>
                 <p className="text-gray-400">Title</p>
                 <p className="text-gray-200 truncate">{currentTrack.name}</p>

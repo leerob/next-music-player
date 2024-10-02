@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Heart,
   Pause,
@@ -10,8 +10,8 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
-} from 'lucide-react';
-import { usePlayback } from '@/app/playback-context';
+} from "lucide-react";
+import { usePlayback } from "@/app/playback-context";
 
 export function TrackInfo() {
   let { currentTrack } = usePlayback();
@@ -21,15 +21,15 @@ export function TrackInfo() {
       {currentTrack && (
         <>
           <img
-            src={currentTrack.imageUrl || '/placeholder.svg'}
+            src={currentTrack.imageUrl || "/placeholder.svg"}
             alt="Now playing"
-            className="w-10 h-10 object-cover"
+            className="w-14 h-14 object-cover"
           />
           <div className="flex-shrink min-w-0">
-            <div className="text-sm font-medium truncate max-w-[120px] sm:max-w-[200px] text-gray-200">
+            <div className="text-base font-medium truncate max-w-[120px] sm:max-w-[200px] text-gray-200">
               {currentTrack.name}
             </div>
-            <div className="text-xs text-gray-400 truncate max-w-[120px] sm:max-w-[200px]">
+            <div className="text-sm text-gray-400 truncate max-w-[120px] sm:max-w-[200px]">
               {currentTrack.artist}
             </div>
           </div>
@@ -99,7 +99,7 @@ export function ProgressBar() {
   let formatTime = (time: number) => {
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   let handleProgressChange = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -115,7 +115,7 @@ export function ProgressBar() {
 
   return (
     <div className="flex items-center w-full mt-1">
-      <span className="text-xs tabular-nums text-gray-400">
+      <span className="text-sm tabular-nums text-gray-400">
         {formatTime(currentTime)}
       </span>
       <div
@@ -130,7 +130,7 @@ export function ProgressBar() {
           }}
         ></div>
       </div>
-      <span className="text-xs tabular-nums text-gray-400">
+      <span className="text-sm tabular-nums text-gray-400">
         {formatTime(duration)}
       </span>
     </div>
@@ -232,44 +232,44 @@ export function PlaybackControls() {
       let updateTime = () => setCurrentTime(audio.currentTime);
       let updateDuration = () => setDuration(audio.duration);
 
-      audio.addEventListener('timeupdate', updateTime);
-      audio.addEventListener('loadedmetadata', updateDuration);
+      audio.addEventListener("timeupdate", updateTime);
+      audio.addEventListener("loadedmetadata", updateDuration);
 
       return () => {
-        audio.removeEventListener('timeupdate', updateTime);
-        audio.removeEventListener('loadedmetadata', updateDuration);
+        audio.removeEventListener("timeupdate", updateTime);
+        audio.removeEventListener("loadedmetadata", updateDuration);
       };
     }
   }, [audioRef, setCurrentTime, setDuration]);
 
   useEffect(() => {
-    if ('mediaSession' in navigator && currentTrack) {
+    if ("mediaSession" in navigator && currentTrack) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentTrack.name,
         artist: currentTrack.artist,
         album: currentTrack.album || undefined,
         artwork: [
-          { src: currentTrack.imageUrl!, sizes: '512x512', type: 'image/jpeg' },
+          { src: currentTrack.imageUrl!, sizes: "512x512", type: "image/jpeg" },
         ],
       });
 
-      navigator.mediaSession.setActionHandler('play', () => {
+      navigator.mediaSession.setActionHandler("play", () => {
         audioRef.current?.play();
         togglePlayPause();
       });
 
-      navigator.mediaSession.setActionHandler('pause', () => {
+      navigator.mediaSession.setActionHandler("pause", () => {
         audioRef.current?.pause();
         togglePlayPause();
       });
 
       navigator.mediaSession.setActionHandler(
-        'previoustrack',
+        "previoustrack",
         playPreviousTrack
       );
-      navigator.mediaSession.setActionHandler('nexttrack', playNextTrack);
+      navigator.mediaSession.setActionHandler("nexttrack", playNextTrack);
 
-      navigator.mediaSession.setActionHandler('seekto', (details) => {
+      navigator.mediaSession.setActionHandler("seekto", (details) => {
         if (audioRef.current && details.seekTime !== undefined) {
           audioRef.current.currentTime = details.seekTime;
           setCurrentTime(details.seekTime);
@@ -285,7 +285,7 @@ export function PlaybackControls() {
               position: audioRef.current.currentTime,
             });
           } catch (error) {
-            console.error('Error updating position state:', error);
+            console.error("Error updating position state:", error);
           }
         }
       };
@@ -294,26 +294,26 @@ export function PlaybackControls() {
         updatePositionState();
       };
 
-      audioRef.current?.addEventListener('timeupdate', updatePositionState);
+      audioRef.current?.addEventListener("timeupdate", updatePositionState);
       audioRef.current?.addEventListener(
-        'loadedmetadata',
+        "loadedmetadata",
         handleLoadedMetadata
       );
 
       return () => {
         audioRef.current?.removeEventListener(
-          'timeupdate',
+          "timeupdate",
           updatePositionState
         );
         audioRef.current?.removeEventListener(
-          'loadedmetadata',
+          "loadedmetadata",
           handleLoadedMetadata
         );
-        navigator.mediaSession.setActionHandler('play', null);
-        navigator.mediaSession.setActionHandler('pause', null);
-        navigator.mediaSession.setActionHandler('previoustrack', null);
-        navigator.mediaSession.setActionHandler('nexttrack', null);
-        navigator.mediaSession.setActionHandler('seekto', null);
+        navigator.mediaSession.setActionHandler("play", null);
+        navigator.mediaSession.setActionHandler("pause", null);
+        navigator.mediaSession.setActionHandler("previoustrack", null);
+        navigator.mediaSession.setActionHandler("nexttrack", null);
+        navigator.mediaSession.setActionHandler("seekto", null);
       };
     }
   }, [

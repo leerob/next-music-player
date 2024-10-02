@@ -20,7 +20,7 @@ export function SearchInput(props: { value?: string }) {
       <Input
         ref={inputRef}
         type="search"
-        className="mb-4 bg-[#1A1A1A] border-[#333] text-xs h-8 focus-visible:ring-0 pr-8 [&::-webkit-search-cancel-button]:appearance-none"
+        className="mb-4 bg-[#1A1A1A] border-[#333] text-sm h-8 focus-visible:ring-0 pr-8 [&::-webkit-search-cancel-button]:appearance-none"
         style={{
           WebkitAppearance: 'none',
           MozAppearance: 'none',
