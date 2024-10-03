@@ -57,6 +57,7 @@ function PlaylistRow({ playlist }: { playlist: Playlist }) {
               variant="ghost"
               size="icon"
               className="h-6 w-6 text-gray-400 hover:text-white focus:text-white"
+              onClick={(e) => e.stopPropagation()}
             >
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Playlist options</span>
