@@ -3,7 +3,7 @@
 import { createPlaylist } from '@/lib/db/queries';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
-import { playlists, playlistSongs } from '@/lib/db/schema';
+import { playlists, playlistSongs, songs } from '@/lib/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { put } from '@vercel/blob';
 
@@ -116,4 +116,47 @@ export async function addToPlaylistAction(playlistId: string, songId: string) {
   revalidatePath('/', 'layout');
 
   return { success: true, message: 'Song added to playlist successfully' };
+}
+
+export async function updateTrackAction(_: any, formData: FormData) {
+  let trackId = formData.get('trackId') as string;
+  let field = formData.get('field') as string;
+  let value = formData.get(field) as keyof typeof songs.$inferInsert | number;
+
+  if (value === 'bpm') {
+    value = parseInt(value as string);
+  }
+
+  let data: Partial<typeof songs.$inferInsert> = { [field]: value };
+  await db.update(songs).set(data).where(eq(songs.id, trackId));
+  revalidatePath('/', 'layout');
+
+  return { success: true, error: '' };
+}
+
+export async function updateTrackImageAction(_: any, formData: FormData) {
+  let trackId = formData.get('trackId') as string;
+  let file = formData.get('file') as File;
+
+  if (!trackId || !file) {
+    throw new Error('Missing trackId or file');
+  }
+
+  try {
+    const blob = await put(`track-images/${trackId}-${file.name}`, file, {
+      access: 'public',
+    });
+
+    await db
+      .update(songs)
+      .set({ imageUrl: blob.url })
+      .where(eq(songs.id, trackId));
+
+    revalidatePath('/', 'layout');
+
+    return { success: true, imageUrl: blob.url };
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw new Error('Failed to upload file');
+  }
 }
