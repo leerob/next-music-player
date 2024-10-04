@@ -127,16 +127,16 @@ export async function updateTrackAction(_: any, formData: FormData) {
     value = parseInt(value as string);
   }
 
-  const data: Partial<typeof songs.$inferInsert> = { [field]: value };
+  let data: Partial<typeof songs.$inferInsert> = { [field]: value };
   await db.update(songs).set(data).where(eq(songs.id, trackId));
   revalidatePath('/', 'layout');
 
-  return { success: true };
+  return { success: true, error: '' };
 }
 
 export async function updateTrackImageAction(_: any, formData: FormData) {
-  const trackId = formData.get('trackId') as string;
-  const file = formData.get('file') as File;
+  let trackId = formData.get('trackId') as string;
+  let file = formData.get('file') as File;
 
   if (!trackId || !file) {
     throw new Error('Missing trackId or file');
