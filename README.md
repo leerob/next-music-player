@@ -7,8 +7,8 @@ A nice GUI for playing/viewing local media files.
 ## Getting Started
 
 ```bash
-git clone https://github.com/leerob/music-player
-cd music-player
+git clone https://github.com/leerob/next-music-player
+cd next-music-player
 pnpm install
 ```
 
