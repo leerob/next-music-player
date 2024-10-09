@@ -119,6 +119,11 @@ export async function addToPlaylistAction(playlistId: string, songId: string) {
 }
 
 export async function updateTrackAction(_: any, formData: FormData) {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return;
+  }
+
   let trackId = formData.get('trackId') as string;
   let field = formData.get('field') as string;
   let value = formData.get(field) as keyof typeof songs.$inferInsert | number;
@@ -135,6 +140,11 @@ export async function updateTrackAction(_: any, formData: FormData) {
 }
 
 export async function updateTrackImageAction(_: any, formData: FormData) {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return;
+  }
+
   let trackId = formData.get('trackId') as string;
   let file = formData.get('file') as File;
 
