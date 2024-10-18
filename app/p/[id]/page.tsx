@@ -2,12 +2,20 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 import { TrackTable } from './track-table';
-import { getPlaylistWithSongs } from '@/lib/db/queries';
+import { getAllPlaylists, getPlaylistWithSongs } from '@/lib/db/queries';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { formatDuration } from '@/lib/utils';
 import { CoverImage } from './cover-image';
 import { EditableTitle } from './editable-title';
+
+export async function generateStaticParams() {
+  let playlists = await getAllPlaylists();
+
+  return playlists.map((p) => ({
+    id: p.id,
+  }));
+}
 
 export default async function PlaylistPage({
   params,

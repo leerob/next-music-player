@@ -8,6 +8,8 @@ async function Tracks({
 }: {
   searchParams: Promise<{ q: string }>;
 }) {
+  'use cache';
+
   const query = (await searchParams).q;
   const songs = query ? await searchSongs(query) : await getAllSongs();
   // @ts-ignore

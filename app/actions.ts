@@ -1,7 +1,6 @@
 'use server';
 
-import { createPlaylist } from '@/lib/db/queries';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
 import { playlists, playlistSongs, songs } from '@/lib/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
@@ -13,7 +12,9 @@ export async function createPlaylistAction(id: string, name: string) {
     return;
   }
 
-  await createPlaylist(id, name);
+  await db.insert(playlists).values({ id, name }).returning();
+
+  revalidateTag('playlists');
 }
 
 export async function uploadPlaylistCoverAction(_: any, formData: FormData) {
@@ -76,6 +77,8 @@ export async function deletePlaylistAction(id: string) {
 
     await tx.delete(playlists).where(eq(playlists.id, id)).execute();
   });
+
+  revalidateTag('playlists');
 }
 
 export async function addToPlaylistAction(playlistId: string, songId: string) {
@@ -119,6 +122,11 @@ export async function addToPlaylistAction(playlistId: string, songId: string) {
 }
 
 export async function updateTrackAction(_: any, formData: FormData) {
+  // Let's only handle this on local for now
+  if (process.env.VERCEL_ENV === 'production') {
+    return { error: '' };
+  }
+
   let trackId = formData.get('trackId') as string;
   let field = formData.get('field') as string;
   let value = formData.get(field) as keyof typeof songs.$inferInsert | number;
