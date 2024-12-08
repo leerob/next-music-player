@@ -123,8 +123,10 @@ export async function updateTrackAction(_: any, formData: FormData) {
   let field = formData.get('field') as string;
   let value = formData.get(field) as keyof typeof songs.$inferInsert | number;
 
-  if (value === 'bpm') {
+  if (value === 'bpm' && typeof value === 'number') {
     value = parseInt(value as string);
+  } else {
+    return { success: false, error: 'bpm should be a valid number' };
   }
 
   let data: Partial<typeof songs.$inferInsert> = { [field]: value };
