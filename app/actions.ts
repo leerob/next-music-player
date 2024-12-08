@@ -125,7 +125,7 @@ export async function updateTrackAction(_: any, formData: FormData) {
 
   if (value === 'bpm' && typeof value === 'number') {
     value = parseInt(value as string);
-  } else{
+  } else {
     return { success: false, error: 'bpm should be a valid number' };
   }
 
