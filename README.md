@@ -47,6 +47,20 @@ pnpm db:studio
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
 
+### Remote Image Configuration
+If you're using remote images (e.g., from Vercel Blob), configure next.config.ts like this:
+
+```
+images: {
+  remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: 'your-image-host.com',
+    },
+  ],
+}
+```
+
 ## Features
 
 - ✅ Uses MediaSession API to sync track metadata with system controls
