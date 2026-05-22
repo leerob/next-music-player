@@ -21,7 +21,7 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vercel/blob": "^2.3.3",
+    "@vercel/blob": "^2.4.0",
     "ai": "^6.0.158",
     "autoprefixer": "^10.4.27",
     "babel-plugin-react-compiler": "1.0.0",
@@ -32,17 +32,17 @@
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.8.0",
     "music-metadata": "^11.12.3",
-    "next": "16.2.3",
-    "postcss": "^8.5.9",
+    "next": "16.2.6",
+    "postcss": "^8.5.15",
     "postgres": "^3.4.9",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "2.0.1",
     "typescript": "^6.0.2",
-    "uuid": "^13.0.0",
+    "uuid": "^13.0.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -52,6 +52,11 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "esbuild": ">=0.25.0",
+      "postcss": ">=8.5.10",
+      "undici": ">=6.24.0"
+    }
   }
 }
