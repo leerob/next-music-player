@@ -1,7 +1,7 @@
 import { db } from './drizzle';
 import { songs } from './schema';
 import { eq, desc } from 'drizzle-orm';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 
@@ -14,14 +14,16 @@ export let cleanupMetadata = async () => {
     console.log(`Processing song: ${song.name}`);
 
     try {
-      let result = await generateObject({
+      let result = await generateText({
         model: openai('gpt-4-turbo'),
-        schema: z.object({
-          cleanTitle: z.string(),
-          mainArtist: z.string(),
-          featuringArtists: z.array(z.string()).nullable(),
-          album: z.string(),
-          genre: z.string(),
+        output: Output.object({
+          schema: z.object({
+            cleanTitle: z.string(),
+            mainArtist: z.string(),
+            featuringArtists: z.array(z.string()).nullable(),
+            album: z.string(),
+            genre: z.string(),
+          }),
         }),
         prompt: `
           As an AI assistant specializing in music metadata, clean up and enhance the following song information:
@@ -43,7 +45,11 @@ export let cleanupMetadata = async () => {
         `,
       });
 
-      let cleanedMetadata = result.object;
+      let cleanedMetadata = result.output;
+      if (!cleanedMetadata) {
+        console.error(`No structured output for song: ${song.name}`);
+        continue;
+      }
 
       let updatedSong = {
         name: cleanedMetadata.cleanTitle || song.name,
